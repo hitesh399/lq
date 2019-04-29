@@ -1,0 +1,22 @@
+{
+    "name": "singsys/laravel-quick",
+    "require": {
+        "laravel/passport": "^7.0",
+        "predis/predis": "^1.1",
+        "staudenmeir/eloquent-json-relations": "^1.1"
+    },
+    "authors": [
+        {
+            "name": "Hitesh Kumar",
+            "email": "hitesh@singsys.com"
+        }
+    ],
+    "extra": {
+
+        "laravel": {
+            "providers": [
+                "Singsys\\LQ\\LqServiceProvider"
+            ]
+        }
+    }
+}
