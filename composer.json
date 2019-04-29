@@ -11,6 +11,11 @@
             "email": "hitesh@singsys.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Singsys\\LQ\\LqServiceProvider\\": "src/"
+        }
+    },
     "extra": {
 
         "laravel": {
