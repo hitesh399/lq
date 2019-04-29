@@ -93,4 +93,9 @@ return $this->setData(['user' => $user])
        return parent::render($request, $exception);
     }
 ```
-- Execute the migration command on terminal: php artisan migrate
+- Execute the following command on terminal:
+```
+php artisan migrate
+php artisan lq:install
+```
+
