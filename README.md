@@ -98,4 +98,14 @@ return $this->setData(['user' => $user])
 php artisan migrate
 php artisan lq:install
 ```
-
+- Modify the RouteServiceProvider file, you just need to put the LqApiMiddleware globally for all Apis Like:
+```
+protected function mapApiRoutes()
+{
+    Route::prefix('api')
+         ->middleware([\Singsys\LQ\Middleware\LqApiMiddleware::class])
+         ->namespace($this->namespace . '\Api')
+         ->group(base_path('routes/api.php'));
+}
+```
+    
