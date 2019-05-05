@@ -97,6 +97,7 @@ return $this->setData(['user' => $user])
 ```
 php artisan migrate
 php artisan lq:install
+php artisan vendor:publish --tag=lq-config
 ```
 - Modify the RouteServiceProvider file, you just need to put the LqApiMiddleware globally for all Apis Like:
 ```

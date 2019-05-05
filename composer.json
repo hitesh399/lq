@@ -3,7 +3,8 @@
     "require": {
         "laravel/passport": "^7.0",
         "predis/predis": "^1.1",
-        "staudenmeir/eloquent-json-relations": "^1.1"
+        "staudenmeir/eloquent-json-relations": "^1.1",
+        "wcadena/laravel-string-blade-compiler": "^1.3"
     },
     "authors": [
         {

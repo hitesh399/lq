@@ -4,6 +4,7 @@ namespace Singsys\LQ\Lib\Concerns;
 
 use Cache;
 use Illuminate\Support\Collection;
+use Singsys\LQ\Lib\StringCompiler;
 
 Trait NotificationTemplate {
 
@@ -18,11 +19,9 @@ Trait NotificationTemplate {
             $data =  $model::where('name', $key)->first([
                 'name', 'subject', 'options', 'body', 'type'
             ]);
-
             if(!$data) {
                 return null;
             }
-
             return [
                 'subject' => $data->subject,
                 'body' => $data->body,
@@ -30,37 +29,20 @@ Trait NotificationTemplate {
             ];
         });
 
-        $template['subject'] = $this->replaceVeriables($template['subject'], $template['variables'], $data);
-        $template['body'] = $this->replaceVeriables($template['body'], $template['variables'], $data);
+        $subject = $template['subject'];
+        $body = $template['body'];
+        $string = new StringCompiler();
+
+        $subject = $string->makePureString($subject, $data);
+        $subject = $string->replaceVeriables($subject, $template['variables'], $data);
+
+        $body = $string->makePureString($body, $data);
+        $body = $string->replaceVeriables($body, $template['variables'], $data);
+
+        $template['subject'] = $subject;
+        $template['body'] = $body;
 
         return $template;
-    }
-
-    /**
-     * To Replace the veriable from html.
-     */
-    protected function replaceVeriables($html, Array $variables, $data) {
-
-        $html = stripslashes(html_entity_decode($html));
-
-        foreach ($variables as $var) {
-
-            preg_match_all('/\{+'.$var.'+\}/i', $html, $matches);
-
-            $val = array_get($data, $var);
-
-            if(isset($matches[0]) && is_array($matches[0])) {
-
-                $mt = $matches[0];
-
-                foreach($mt as $mtk) {
-
-                    $html = str_replace($mtk, $val, $html);
-                }
-            }
-        }
-
-        return $html;
     }
 
     protected function model() {
