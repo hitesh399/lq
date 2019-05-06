@@ -23,6 +23,7 @@ class LqApiMiddleware extends Authenticate
      */
     public function handle($request, Closure $next, ...$guard)
     {
+
         $request::macro('client', function () {return null; });
         $request::macro('device', function () {return null; });
         # Save Request Error Log into Database
@@ -37,11 +38,10 @@ class LqApiMiddleware extends Authenticate
          * the device id should be present in every request header
          */
         $this->findDeviceInfo($request);
-
         /**
          * Check the Route Access
          */
-        $this->checkRouteAccess($request, $guard);
+        $this->checkRouteAccess($request, ['api']);
 
         return $next($request);
     }
@@ -67,16 +67,15 @@ class LqApiMiddleware extends Authenticate
      * To verify the client id
      */
     private function verifyClient($request)  {
-
         $lq_client = new ClientRepository();
-
         try {
 
             $client_id = \Crypt::decryptString($request->header('client-id'));
             $client = $lq_client->getClient($client_id);
 
-            if(!$client)
+            if (!$client) {
                 $this->invalidClientResponse();
+            }
 
             $request::macro('client', function () use ($client) {
                 return $client;
@@ -93,8 +92,7 @@ class LqApiMiddleware extends Authenticate
      */
     private function findDeviceInfo($request) {
 
-        if(!$request->header('device-id')) {
-
+        if (!$request->header('device-id')) {
             $this->invalidDeviceIdResponse();
         }
 
@@ -120,8 +118,7 @@ class LqApiMiddleware extends Authenticate
 
         $lq_response = app('Lq\Response');
 
-        if($current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
-
+        if ($current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
             # Check the user does have the valid token to access current route.
             $this->authenticate($request, $guards);
 
@@ -146,8 +143,7 @@ class LqApiMiddleware extends Authenticate
 
             # Check the curent user has the privilege to access the current route.
 
-            if(!$permission->canAccess($role_id) && $role_id != 1) {
-
+            if (!$permission->canAccess($role_id) && $role_id != 1) {
                 throw new AuthorizationException;
             }
         }
