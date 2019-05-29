@@ -33,8 +33,10 @@ class MorphManyMedia extends MorphMany {
                 } else if (isset($file['id']) && !empty($file['id'])) {
                     $media = clone $this->getQuery();
                     $media = $media->where('id', $file['id'])->first();
-                    $uploaded_files[] = $media;
-                    $current_ids[] = $file['id'];
+                    if ($media) {
+                        $uploaded_files[] = $media;
+                        $current_ids[] = $file['id'];
+                    }
                 }                
             }
 
@@ -45,6 +47,7 @@ class MorphManyMedia extends MorphMany {
 
             if($this->parent->mediaMorphRelation) {
                 $this->parent->setAttribute($this->parent->mediaMorphRelation, $uploaded_files);
+                $this->parent->setRelation($this->parent->mediaMorphRelation, $uploaded_files);
             }
 
         } else {
