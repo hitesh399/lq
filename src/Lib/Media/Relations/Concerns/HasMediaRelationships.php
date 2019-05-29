@@ -6,6 +6,7 @@ use Singsys\LQ\Lib\Media\Relations\HasOneMedia;
 use Singsys\LQ\Lib\Media\Relations\BelongToMedia;
 //use Singsys\LQ\Lib\Media\Relations\BelongToMediaJson;
 use Singsys\LQ\Lib\Media\Relations\MorphOneMedia;
+use Singsys\LQ\Lib\Media\Relations\MorphManyMedia;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -184,5 +185,48 @@ trait HasMediaRelationships {
     protected function newMorphOneMedia(Builder $query, Model $parent, $type, $id, $localKey)
     {
         return new MorphOneMedia($query, $parent, $type, $id, $localKey);
+    }
+    /**
+     * Define a polymorphic one-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $name
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function morphManyMedia($related, $name, $mediaMorphType = null, $relation = null,  $type = null, $id = null, $localKey = null)
+    {
+        $this->mediaMorphType  = $mediaMorphType;
+        $this->mediaMorphRelation = $relation;
+
+        $instance = $this->newRelatedInstance($related);
+
+        // Here we will gather up the morph type and ID for the relationship so that we
+        // can properly query the intermediate table of a relation. Finally, we will
+        // get the table and create the relationship instances for the developers.
+        [$type, $id] = $this->getMorphs($name, $type, $id);
+
+        $table = $instance->getTable();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return $this->newMorphManyMedia($instance->newQuery(), $this, $table.'.'.$type, $table.'.'.$id, $localKey);
+    }
+
+    /**
+     * Instantiate a new MorphMany relationship with media.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Model  $parent
+     * @param  string  $type
+     * @param  string  $id
+     * @param  string  $localKey
+     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
+     */
+    protected function newMorphManyMedia(Builder $query, Model $parent, $type, $id, $localKey)
+    {
+        return new MorphManyMedia($query, $parent, $type, $id, $localKey);
     }
 }

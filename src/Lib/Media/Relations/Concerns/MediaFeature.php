@@ -36,8 +36,7 @@ trait MediaFeature {
         $uploaded_data = $isJson ? $uploaded_data : $uploaded_data[0];
 
         $this->parent->setAttribute($this->getForeignKey(), $data);
-        dd($this->getAttribute());
-        //$this->parent->setTouchedRelations([$this->relation]);
+        //$this->parent->setTouchedRelations($this->relation]);
 
         if($should_update){
             $this->parent->update([$this->getForeignKey() => $data]);
