@@ -26,9 +26,9 @@ class LqApiMiddleware extends Authenticate
 
         $request::macro('client', function () {return null; });
         $request::macro('device', function () {return null; });
-        
+
         # Save Request Error Log into Database
-        if (App::environment('APP_DEBUG')) {
+        if (\App::environment('APP_DEBUG')) {
             app('LqRequestLog')->createRequest();
         }
 
@@ -47,7 +47,7 @@ class LqApiMiddleware extends Authenticate
         $this->checkRouteAccess($request, ['api']);
 
         $response = $next($request);
-        if (App::environment('APP_DEBUG')) {
+        if (\App::environment('APP_DEBUG')) {
             app('LqRequestLog')->ok($response);
         }
 
@@ -160,7 +160,7 @@ class LqApiMiddleware extends Authenticate
             try {
                 $this->authenticate($request, $guards);
             } catch(\Exception $e) {
-                
+
             }
         }
     }
