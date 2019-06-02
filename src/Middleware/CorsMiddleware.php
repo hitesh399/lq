@@ -13,7 +13,7 @@ class CorsMiddleware {
         // ALLOW OPTIONS METHOD
         $headers = [
             'Access-Control-Allow-Methods'=> 'POST, GET, OPTIONS, PUT, DELETE, PATCH',
-            'Access-Control-Allow-Headers'=> 'cache-control, x-requested-with, Content-Type, Origin, client-id, device-id, Authorization',
+            'Access-Control-Allow-Headers'=> 'cache-control, x-requested-with, Content-Type, Origin, client-id, device-id, Authorization, time-offset',
             'Access-Control-Allow-Origin' => '*'
         ];
         if($request->getMethod() == "OPTIONS") {

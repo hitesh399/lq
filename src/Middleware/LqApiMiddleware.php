@@ -154,6 +154,14 @@ class LqApiMiddleware extends Authenticate
             if (!$permission->canAccess($role_id) && $role_id != 1) {
                 throw new AuthorizationException;
             }
+
+        } else if($request->header('Authorization')) {
+
+            try {
+                $this->authenticate($request, $guards);
+            } catch(\Exception $e) {
+                
+            }
         }
     }
 }
