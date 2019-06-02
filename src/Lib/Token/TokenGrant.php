@@ -15,24 +15,14 @@ class TokenGrant extends PasswordGrant
 {
 
 	public function __construct() {
-
 		$dispatcher = app(\Illuminate\Contracts\Events\Dispatcher::class);
 		$connection = app(\Illuminate\Database\Connection::class);
 		$hash = app(\Illuminate\Hashing\HashManager::class);
-        //dd($dispatcher);
         $token_repository = new \Laravel\Passport\TokenRepository();
-
-        $accessTokenRepository = new AccessTokenRepository($token_repository, $dispatcher);
-
-		// $refresh_token_repository = new RefreshTokenRepository($accessTokenRepository, $connection, $dispatcher);
 		$refresh_token_repository = new RefreshTokenRepository( $connection, $dispatcher);
-
 		$user_repository = new UserRepository($hash);
-
 		parent::__construct($user_repository, $refresh_token_repository);
-
 		$accessTokenRepository = new LqAccessTokenRepository($token_repository, $dispatcher);
-
 		$this->setAccessTokenRepository($accessTokenRepository);
 	}
 

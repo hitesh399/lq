@@ -26,8 +26,11 @@ class LqApiMiddleware extends Authenticate
 
         $request::macro('client', function () {return null; });
         $request::macro('device', function () {return null; });
+        
         # Save Request Error Log into Database
-        app('LqRequestLog')->createRequest();
+        if (App::environment('APP_DEBUG')) {
+            app('LqRequestLog')->createRequest();
+        }
 
         /**
          * Client ID should be present in every request header
@@ -43,7 +46,12 @@ class LqApiMiddleware extends Authenticate
          */
         $this->checkRouteAccess($request, ['api']);
 
-        return $next($request);
+        $response = $next($request);
+        if (App::environment('APP_DEBUG')) {
+            app('LqRequestLog')->ok($response);
+        }
+
+        return $response;
     }
     /**
      * throw exception, if Client id is not valid.

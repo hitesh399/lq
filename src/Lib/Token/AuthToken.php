@@ -2,15 +2,14 @@
 
 namespace Singsys\LQ\Lib\Token;
 
-use Laravel\Passport\ClientRepository as ClientModelRepository;
-use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
-use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
-use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
-use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\CryptKey;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
+use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
-
+use Laravel\Passport\ClientRepository as ClientModelRepository;
+use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
+use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
 
 class AuthToken extends BearerTokenResponse  {
 

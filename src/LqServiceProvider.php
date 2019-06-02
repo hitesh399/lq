@@ -1,8 +1,12 @@
 <?php
 namespace Singsys\LQ;
 
-use Illuminate\Support\ServiceProvider;
 use Response;
+use Illuminate\Http\Request;
+use Singsys\LQ\Macros\ModelMacros;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class LqServiceProvider extends ServiceProvider {
 
@@ -11,10 +15,9 @@ class LqServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot()
+    public function boot(Request $request)
     {
         if ($this->app->runningInConsole()) {
-
             $this->commands([
                 Console\InstallCommand::class,
                 Console\GetClient::class,
@@ -25,6 +28,7 @@ class LqServiceProvider extends ServiceProvider {
 
             $this->registerMigrations();
         }
+        $this->registeredMacros($request);
     }
     /**
      * Register the service provider.
@@ -64,7 +68,6 @@ class LqServiceProvider extends ServiceProvider {
      */
     protected function registerMigrations()
     {
-
         return $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
     }
@@ -80,5 +83,33 @@ class LqServiceProvider extends ServiceProvider {
                 __DIR__.'/../config/lq.php' => config_path('lq.php'),
             ], 'lq-config');
         }
+    }
+    protected function registeredMacros($request) {
+
+        Builder::macro('total', function () use ($request) {
+            return (new ModelMacros($this, $request))->total();
+        });
+        Builder::macro('getSql', function () use ($request) {
+            return (new ModelMacros($this, $request))->getSql();
+        });
+        Builder::macro('lqPaginate', function () use ($request) {
+            return (new ModelMacros($this, $request))->lqPaginate();
+        });
+        Builder::macro('lqUpdate', function (Array $values) use ($request) {
+            return (new ModelMacros($this, $request))->lqUpdate($values);
+        });
+
+        EloquentBuilder::macro('total', function ()use ($request) {
+            return (new ModelMacros($this, $request))->total();
+        });
+        EloquentBuilder::macro('getSql', function () use ($request) {
+            return (new ModelMacros($this, $request))->getSql();
+        });
+        EloquentBuilder::macro('lqPaginate', function () use ($request) {
+            return (new ModelMacros($this, $request))->lqPaginate();
+        });
+        EloquentBuilder::macro('lqUpdate', function (Array $values) use ($request) {
+            return (new ModelMacros($this, $request))->lqUpdate($values);
+        });
     }
 }
