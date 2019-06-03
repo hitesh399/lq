@@ -14,7 +14,7 @@ class MorphOneMedia extends MorphOne {
 
         if ($file) {
             $media = null;
-            if (isset($file['file'])) {
+            if (isset($file['file']) && !empty($file['file'])) {
                 $uploader = new MediaUploader($file, $path, $thumbnails);
                 $data = $uploader->uploadAndPrepareData();
                 $relation_array = $this->make()->toArray();
