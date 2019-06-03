@@ -15,14 +15,14 @@ class MorphManyMedia extends MorphMany {
             $current_ids = [];
             $uploaded_files = [];
             foreach ($files as $file) {
-                if (isset($file['file'])) {                   
+                if (isset($file['file']) && !empty($file['file'])) {
                     $uploader = new MediaUploader($file, $path, $thumbnails);
                     $data = $uploader->uploadAndPrepareData();
                     $data = array_merge($data, $this->make()->toArray());
                     if (isset($file['id']) && !empty($file['id'])) {
                         $media = clone $this->getQuery();
                         $media = $media->where('id', $file['id'])->first();
-                        $media->update($data);                        
+                        $media->update($data);
                     } else {
                         $media = $this->create($data);
                     }
@@ -37,7 +37,7 @@ class MorphManyMedia extends MorphMany {
                         $uploaded_files[] = $media;
                         $current_ids[] = $file['id'];
                     }
-                }                
+                }
             }
 
             if (count($current_ids)) {
