@@ -13,10 +13,16 @@ class MorphOneMedia extends MorphOne {
     public function addMedia(Array $file = null, $path = null, $thumbnails = null) {
 
         if ($file) {
-            $uploader = new MediaUploader($file, $path, $thumbnails);
-            $data = $uploader->uploadAndPrepareData();
-            $relation_array = $this->make()->toArray();
-            $media = $this->updateOrCreate($relation_array, $data);
+            $media = null;
+            if (isset($file['file'])) {
+                $uploader = new MediaUploader($file, $path, $thumbnails);
+                $data = $uploader->uploadAndPrepareData();
+                $relation_array = $this->make()->toArray();
+                $media = $this->updateOrCreate($relation_array, $data);
+            } else if (isset($file['id']) && !empty($file['id'])) {
+                $media = clone $this->getQuery();
+                $media = $media->where('id', $file['id'])->first();
+            }
             if($this->parent->mediaMorphRelation) {
                 $this->parent->setRelation($this->parent->mediaMorphRelation, $media);
             }
