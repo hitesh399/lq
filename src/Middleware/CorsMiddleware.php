@@ -16,7 +16,7 @@ class CorsMiddleware {
             'Access-Control-Allow-Methods'=> 'POST, GET, OPTIONS, PUT, DELETE, PATCH',
             'Access-Control-Allow-Headers'=> 'cache-control, x-requested-with, Content-Type, Origin, client-id, device-id, Authorization, time-offset'
         ];
-        if (\App::environment('APP_DEBUG')) {
+        if (env('APP_DEBUG')) {
             $headers['Access-Control-Allow-Origin'] = '*';
         } else if ($site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN')) {
             $headers['Access-Control-Allow-Origin'] = $site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN');
