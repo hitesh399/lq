@@ -86,27 +86,14 @@ class LqServiceProvider extends ServiceProvider {
     }
     protected function registeredMacros($request) {
 
-        Builder::macro('total', function () use ($request) {
-            return (new ModelMacros($this, $request))->total();
-        });
-        Builder::macro('getSql', function () use ($request) {
-            return (new ModelMacros($this, $request))->getSql();
-        });
-        Builder::macro('lqPaginate', function () use ($request) {
-            return (new ModelMacros($this, $request))->lqPaginate();
-        });
-        Builder::macro('lqUpdate', function (Array $values) use ($request) {
-            return (new ModelMacros($this, $request))->lqUpdate($values);
-        });
-
         EloquentBuilder::macro('total', function ()use ($request) {
             return (new ModelMacros($this, $request))->total();
         });
         EloquentBuilder::macro('getSql', function () use ($request) {
             return (new ModelMacros($this, $request))->getSql();
         });
-        EloquentBuilder::macro('lqPaginate', function () use ($request) {
-            return (new ModelMacros($this, $request))->lqPaginate();
+        EloquentBuilder::macro('lqPaginate', function ($columns = ['*'], $fetch_total_for_all_page = false) use ($request) {
+            return (new ModelMacros($this, $request))->lqPaginate($columns, $fetch_total_for_all_page);
         });
         EloquentBuilder::macro('lqUpdate', function (Array $values) use ($request) {
             return (new ModelMacros($this, $request))->lqUpdate($values);

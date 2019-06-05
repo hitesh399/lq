@@ -36,7 +36,7 @@ class ModelMacros {
 	}
 
 	public function getSql() {
-		$builder = $this->builder;
+		$builder = clone $this->builder;
 		if ($this->builder instanceof \Illuminate\Database\Eloquent\Builder) {
 			$builder = $this->builder->getQuery();
 		}
@@ -50,17 +50,18 @@ class ModelMacros {
 	 	return (int) $total;
 	}
 
-	public function lqPaginate($columns = ['*']) {
-		$page = $this->request->page ? $this->request->page : 1;
-        $perPage = $this->request->page_size ? $this->request->page_size : 4;
+	public function lqPaginate($columns = ['*'], $fetch_total_for_all_page = false) {
+        $model = $this->builder->getModel();
         $builder = clone $this->builder;
+		$page = $this->request->page ? $this->request->page : 1;
+        $perPage = $this->request->page_size ? $this->request->page_size : $model->getPerPage();
         if ($perPage != '-1') {
             $builder->forPage($page, $perPage);
         }
         $results = $builder->get($columns);
 		$data = [];
 		$data['data'] = $results;
-		if ($page === 1) {
+		if ($page == 1 || $fetch_total_for_all_page) {
 			$data['total'] = $perPage == '-1' ? $results->count() : $this->total();
 		}
 		return $data;
@@ -72,6 +73,6 @@ class ModelMacros {
      * @return int
      */
     public function lqUpdate(array $values) {
-		return $this->builder->update($values);
+		return $this->builder->getModel()->update($values);
 	}
 }
