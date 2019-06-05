@@ -25,15 +25,12 @@ trait HasMediaRelationships {
      */
     public function hasOneMedia($related, $foreignKey = null, $localKey = null)
     {
-
         $instance = $this->newRelatedInstance($related);
-
         $foreignKey = $foreignKey ?: $this->getForeignKey();
-
         $localKey = $localKey ?: $this->getKeyName();
-
         return $this->newHasOneMedia($instance->newQuery(), $this, $instance->getTable().'.'.$foreignKey, $localKey);
     }
+
     /**
      * Get the class name for polymorphic relations.
      *
@@ -41,15 +38,13 @@ trait HasMediaRelationships {
      */
     public function getMorphClass()
     {
-        if($this->mediaMorphType) {
+        if ($this->mediaMorphType) {
             return $this->mediaMorphType;
         }
-
         $morphMap = Relation::morphMap();
-        if (! empty($morphMap) && in_array(static::class, $morphMap)) {
+        if (!empty($morphMap) && in_array(static::class, $morphMap)) {
             return array_search(static::class, $morphMap, true);
         }
-
         return static::class;
     }
     public function setMediaMorphType($mediaMorphType) {

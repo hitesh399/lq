@@ -7,42 +7,30 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class MorphOneMedia extends MorphOne {
 
+    use Concerns\MediaStoreUpdateRelation;
+
+    private $uploadedFile = [];
+
     /**
-     * Store the Media File and update in relation.
+     * Store the file in default storage and update the relation in media table.
+     *
+     * @param array  $files     [Array Structure should be [[file => Blob, id => if already added]] ]
+     * @param string $path      [Destination path after Storage base path]
+     * @param array $thumbnails [Thumbnails]
+     *
+     * @return $this
      */
     public function addMedia(Array $file = null, $path = null, $thumbnails = null) {
-        $media = null;
-        if (isset($file['file']) && !empty($file['file'])) {
-            $uploader = new MediaUploader($file, $path, $thumbnails);
-            $data = $uploader->uploadAndPrepareData();
-            $relation_array = $this->make()->toArray();
-            $media = $this->updateOrCreate($relation_array, $data);
-        } else if (isset($file['id']) && !empty($file['id'])) {
-            $media = clone $this->getQuery();
-            $media = $media->where('id', $file['id'])->first();
-        } else {
+        $this->uploadedFile = $this->_updloadFileUpdateRelation($file, $path, $thumbnails);
+        if (!$this->uploadedFile) {
             $this->unlinkRelation();
         }
         if ($this->parent->mediaMorphRelation) {
-            $this->parent->setRelation($this->parent->mediaMorphRelation, $media);
+            $this->parent->setRelation($this->parent->mediaMorphRelation, $this->uploadedFile);
         }
         return $this;
     }
-
-    protected function unlinkRelation() {
-        # here we also need to delete the Media File.
-        $this->getQuery()->delete();
-    }
-
-    /**
-     * Get the class name of the parent model.
-     *
-     * @return string
-     */
-    protected function setMediaType($type)
-    {
-        $this->parent->setMediaMorphType($type);
-        $this->morphClass = $this->parent->getMorphClass();
-        return $this;
+    public function getMedia() {
+        return $this->uploadedFile;
     }
 }

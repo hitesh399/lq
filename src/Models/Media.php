@@ -30,4 +30,8 @@ class Media extends Model
         'mediable_type'=> 'string',
         'type'=> 'string'
     ];
+
+    public function getPathAttribute($path) {
+        return $path ? \Storage::url($path) : null;
+    }
 }
