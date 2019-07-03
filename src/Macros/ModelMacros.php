@@ -45,9 +45,7 @@ class ModelMacros {
 	}
 
 	public function total() {
-	 	$data = $this->builder->getConnection()->select('SELECT count(*) as total FROM ('.$this->getSql().') as total_record');
-	 	$total = $data[0]->total;
-	 	return (int) $total;
+	 	return $this->builder->toBase()->getCountForPagination();
 	}
 
 	public function lqPaginate($columns = ['*'], $fetch_total_for_all_page = false) {
