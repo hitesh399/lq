@@ -44,19 +44,28 @@ class ModelMacros {
 		return $this->dbd($data);
 	}
 
-	public function total() {
+	public function total() 
+	{
 	 	return $this->builder->toBase()->getCountForPagination();
 	}
 
-	public function lqPaginate($columns = ['*'], $fetch_total_for_all_page = false) {
-        $model = $this->builder->getModel();
-        $builder = clone $this->builder;
+	public function lqPaginate($columns = ['*'], $fetch_total_for_all_page = false) 
+	{
+		$model = $this->builder->getModel();
+		$builder = clone $this->builder;
 		$page = $this->request->page ? $this->request->page : 1;
-        $perPage = $this->request->page_size ? $this->request->page_size : $model->getPerPage();
-        if ($perPage != '-1') {
-            $builder->forPage($page, $perPage);
-        }
-        $results = $builder->get($columns);
+		$perPage = $this->request->page_size ? $this->request->page_size : $model->getPerPage();
+		$offset = $this->request->offset;
+
+		if ($perPage != '-1' && !$offset) {
+		    $builder->forPage($page, $perPage);
+		}
+		// Fetching the list by offset
+		if ($offset) {
+		   $builder->offset($offset)->take($perPage);
+		}
+
+		$results = $builder->get($columns);
 		$data = [];
 		$data['data'] = $results;
 		if ($page == 1 || $fetch_total_for_all_page) {
@@ -64,13 +73,14 @@ class ModelMacros {
 		}
 		return $data;
 	}
-	/**
+     /**
      * Update a record in the database.
      *
      * @param  array  $values
      * @return int
      */
-    public function lqUpdate(array $values) {
-		return $this->builder->getModel()->update($values);
-	}
+    public function lqUpdate(array $values) 
+    {
+	return $this->builder->getModel()->update($values);
+    }
 }
