@@ -44,12 +44,12 @@ class ModelMacros {
 		return $this->dbd($data);
 	}
 
-	public function total() 
+	public function total()
 	{
 	 	return $this->builder->toBase()->getCountForPagination();
 	}
 
-	public function lqPaginate($columns = ['*'], $fetch_total_for_all_page = false) 
+	public function lqPaginate($columns = ['*'])
 	{
 		$model = $this->builder->getModel();
 		$builder = clone $this->builder;
@@ -77,7 +77,7 @@ class ModelMacros {
      * @param  array  $values
      * @return int
      */
-    public function lqUpdate(array $values) 
+    public function lqUpdate(array $values)
     {
 	return $this->builder->getModel()->update($values);
     }

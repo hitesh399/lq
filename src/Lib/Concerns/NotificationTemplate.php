@@ -3,11 +3,13 @@
 namespace Singsys\LQ\Lib\Concerns;
 
 use Cache;
-use Illuminate\Support\Collection;
 use Singsys\LQ\Lib\StringCompiler;
 
 Trait NotificationTemplate {
 
+    protected $timeVeriables = [];
+    protected $inTimeZone = 'UTC';
+    protected $outTimeZone = 'UTC';
     /**
      * To Get the Email Template
      */
@@ -31,7 +33,7 @@ Trait NotificationTemplate {
 
         $subject = $template['subject'];
         $body = $template['body'];
-        $string = new StringCompiler();
+        $string = new StringCompiler($this->timeVeriables, $this->inTimeZone, $this->outTimeZone);
 
         $subject = $string->makePureString($subject, $data);
         $subject = $string->replaceVeriables($subject, $template['variables'], $data);
@@ -41,7 +43,6 @@ Trait NotificationTemplate {
 
         $template['subject'] = $subject;
         $template['body'] = $body;
-
         return $template;
     }
 
