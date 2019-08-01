@@ -68,9 +68,7 @@ class ModelMacros {
 		$results = $builder->get($columns);
 		$data = [];
 		$data['data'] = $results;
-		if ($page == 1 || $fetch_total_for_all_page) {
-			$data['total'] = $perPage == '-1' ? $results->count() : $this->total();
-		}
+		$data['total'] = $perPage == '-1' ? $results->count() : $this->total();
 		return $data;
 	}
      /**
