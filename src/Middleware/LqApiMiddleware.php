@@ -28,10 +28,10 @@ class LqApiMiddleware extends Authenticate
         $request::macro('device', function () {return null; });
 
         # Save Request Error Log into Database
-        if (\App::environment('APP_DEBUG')) {
+        if (env('APP_DEBUG')) {
             app('LqRequestLog')->createRequest();
         }
-
+        
         /**
          * Client ID should be present in every request header
          */
