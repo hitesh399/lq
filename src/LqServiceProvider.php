@@ -5,6 +5,7 @@ use Response;
 use Illuminate\Http\Request;
 use Singsys\LQ\Macros\ModelMacros;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
@@ -68,8 +69,9 @@ class LqServiceProvider extends ServiceProvider {
      */
     protected function registerMigrations()
     {
-        return $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
+        if (Schema::hasTable('users')) {
+            return $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        }
     }
     /**
      * Setup the resource publishing groups for Passport.
