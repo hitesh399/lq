@@ -4,19 +4,22 @@ namespace Singsys\LQ\Lib\Concerns;
 
 use Cache;
 use Singsys\LQ\Lib\StringCompiler;
+use Illuminate\Mail\Mailable;
 
 Trait NotificationTemplate {
 
     protected $timeVeriables = [];
     protected $inTimeZone = 'UTC';
     protected $outTimeZone = 'UTC';
+    protected $emailHeader = 'EMAIL_HEADER';
+    protected $emailFooter = 'EMAIL_FOOTER';
+
     /**
      * To Get the Email Template
      */
-    protected function getTemaplate($key, Array $data = []) {
-
+    protected function getTemaplate($key, Array $data = [])
+    {
         $template = Cache::rememberForever('notification_template.'.$key, function () use ($key) {
-
             $model = $this->model();
             $data =  $model::where('name', $key)->first([
                 'name', 'subject', 'options', 'body', 'type'
@@ -33,6 +36,17 @@ Trait NotificationTemplate {
 
         $subject = $template['subject'];
         $body = $template['body'];
+        if ($this instanceof Mailable) {
+            $site_config = app('site_config');
+            $header = $site_config->get($this->emailHeader);
+            $footer = $site_config->get($this->emailFooter);
+            if ($header) {
+                $body = $header . $body;
+            }
+            if ($footer) {
+                $body = $body . $footer;
+            }
+        }
         $string = new StringCompiler($this->timeVeriables, $this->inTimeZone, $this->outTimeZone);
 
         $subject = $string->makePureString($subject, $data);
@@ -46,8 +60,13 @@ Trait NotificationTemplate {
         return $template;
     }
 
-    protected function model() {
-
+    /**
+     * To get the Notification Template Model
+     *
+     * @return object Illuminate\Database\Eloquent\Model
+     */
+    protected function model()
+    {
         return config('lq.notification_template_class');
     }
 }
