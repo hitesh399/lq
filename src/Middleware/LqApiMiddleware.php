@@ -31,7 +31,7 @@ class LqApiMiddleware extends Authenticate
         if (env('APP_DEBUG')) {
             app('LqRequestLog')->createRequest();
         }
-        
+
         /**
          * Client ID should be present in every request header
          */
@@ -47,7 +47,7 @@ class LqApiMiddleware extends Authenticate
         $this->checkRouteAccess($request, ['api']);
 
         $response = $next($request);
-        if (\App::environment('APP_DEBUG')) {
+        if (env('APP_DEBUG')) {
             app('LqRequestLog')->ok($response);
         }
 
@@ -74,7 +74,8 @@ class LqApiMiddleware extends Authenticate
     /**
      * To verify the client id
      */
-    private function verifyClient($request)  {
+    private function verifyClient($request)
+    {
         $lq_client = new ClientRepository();
         try {
 
@@ -84,7 +85,6 @@ class LqApiMiddleware extends Authenticate
             if (!$client) {
                 $this->invalidClientResponse();
             }
-
             $request::macro('client', function () use ($client) {
                 return $client;
             });
@@ -115,10 +115,9 @@ class LqApiMiddleware extends Authenticate
     /**
      * To check the current route permission for the login user.
      */
-    private function checkRouteAccess($request, $guards) {
-
+    private function checkRouteAccess($request, $guards)
+    {
         $permission = app('permission');
-
         /**
          * Get the Current Route detail from database or cache.
          */
@@ -126,7 +125,7 @@ class LqApiMiddleware extends Authenticate
 
         $lq_response = app('Lq\Response');
 
-        if ($current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
+        if (\Config::get('lq.check_authentication') && $current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
             # Check the user does have the valid token to access current route.
             $this->authenticate($request, $guards);
 
@@ -137,7 +136,7 @@ class LqApiMiddleware extends Authenticate
             $current_permission = $permission->roleCurrentPermission($role_id);
 
             # Removing database table column from response.
-            if($current_permission && !empty($current_permission['fields'])) {
+            if ($current_permission && !empty($current_permission['fields'])) {
 
                 $fields = $current_permission['fields'];
                 array_walk($fields, function (&$field){
@@ -151,11 +150,11 @@ class LqApiMiddleware extends Authenticate
 
             # Check the curent user has the privilege to access the current route.
 
-            if (!$permission->canAccess($role_id) && $role_id != 1) {
-                throw new AuthorizationException;
+            if (!$permission->canAccess($role_id)) {
+                // throw new AuthorizationException;
             }
 
-        } else if($request->header('Authorization')) {
+        } else if ($request->header('Authorization')) {
 
             try {
                 $this->authenticate($request, $guards);
