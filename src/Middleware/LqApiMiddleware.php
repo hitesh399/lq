@@ -28,7 +28,7 @@ class LqApiMiddleware extends Authenticate
         $request::macro('device', function () {return null; });
 
         # Save Request Error Log into Database
-        if (env('APP_DEBUG')) {
+        if (env('LQ_WRITE_ERROR')) {
             app('LqRequestLog')->createRequest();
         }
 
@@ -47,7 +47,7 @@ class LqApiMiddleware extends Authenticate
         $this->checkRouteAccess($request, ['api']);
 
         $response = $next($request);
-        if (env('APP_DEBUG')) {
+        if (env('LQ_WRITE_ERROR')) {
             app('LqRequestLog')->ok($response);
         }
 
