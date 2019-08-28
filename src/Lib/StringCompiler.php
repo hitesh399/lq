@@ -17,8 +17,9 @@ class StringCompiler {
     /**
      * To Replace the veriable from html.
      */
-    public function replaceVeriables($html, Array $variables, $data)
+    public function replaceVeriables($html, $variables, $data)
     {
+        $variables = $variables ? $variables : [];
         $html = stripslashes(html_entity_decode($html));
         foreach ($variables as $var) {
             $time_format = isset($this->timeVeriables[$var]) ? $this->timeVeriables[$var] : null;
