@@ -40,12 +40,7 @@ Trait NotificationTemplate {
             $site_config = app('site_config');
             $header = $site_config->get($this->emailHeader);
             $footer = $site_config->get($this->emailFooter);
-            if ($header) {
-                $body = $header . $body;
-            }
-            if ($footer) {
-                $body = $body . $footer;
-            }
+            $body = "<table class='mail_main_table'><tr><td>{$header}</td></tr><tr><td>{$body}</td></tr><tr><td>{$footer}</td></tr></table>";
         }
         $string = new StringCompiler($this->timeVeriables, $this->inTimeZone, $this->outTimeZone);
 
