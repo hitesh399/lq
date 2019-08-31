@@ -12,6 +12,8 @@ Trait NotificationTemplate {
     protected $inTimeZone = 'UTC';
     protected $outTimeZone = 'UTC';
     protected $emailHeader = 'EMAIL_HEADER';
+    protected $emailBody = 'EMAIL_BODY';
+    protected $emailContainer = 'EMAIL_CONTAINER';
     protected $emailFooter = 'EMAIL_FOOTER';
 
     /**
@@ -36,19 +38,41 @@ Trait NotificationTemplate {
 
         $subject = $template['subject'];
         $body = $template['body'];
-        if ($this instanceof Mailable) {
-            $site_config = app('site_config');
-            $header = $site_config->get($this->emailHeader);
-            $footer = $site_config->get($this->emailFooter);
-            $body = "<table class='mail_main_table' width='100%'><tr><td>{$header}</td></tr><tr><td>{$body}</td></tr><tr><td>{$footer}</td></tr></table>";
-        }
         $string = new StringCompiler($this->timeVeriables, $this->inTimeZone, $this->outTimeZone);
 
         $subject = $string->makePureString($subject, $data);
         $subject = $string->replaceVeriables($subject, $template['variables'], $data);
-
         $body = $string->makePureString($body, $data);
         $body = $string->replaceVeriables($body, $template['variables'], $data);
+
+        if ($this instanceof Mailable) {
+
+            $site_config = app('site_config');
+            $layout_header = $site_config->get($this->emailHeader);
+            $layout_footer = $site_config->get($this->emailFooter);
+            $layout_body = $site_config->get($this->emailBody);
+            $layout_container = $site_config->get($this->emailContainer);
+            if ($layout_body) {
+                $body = $string->replaceVeriables(
+                    $layout_body,
+                    ['body'],
+                    ['body' => $body]
+                );
+            }
+            if ($layout_header) {
+                $body = $layout_header . $body;
+            }
+            if ($layout_footer) {
+                $body = $body . $layout_footer;
+            }
+            if ($layout_container) {
+                $body = $string->replaceVeriables(
+                    $layout_container,
+                    ['body'],
+                    ['body' => $body]
+                );
+            }
+        }
 
         $template['subject'] = $subject;
         $template['body'] = $body;
