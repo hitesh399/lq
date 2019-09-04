@@ -14,7 +14,7 @@ trait MediaStoreUpdateRelation {
      * @return \Illuminate\Database\Eloquent\Collection
      * @return void
      */
-    private function _updloadFileUpdateRelation(array $file, $path, $thumbnails)
+    private function _updloadFileUpdateRelation($file, $path, $thumbnails)
     {
         if (isset($file['file']) && !empty($file['file'])) {
             $uploader = new MediaUploader($file, $path, $thumbnails);
