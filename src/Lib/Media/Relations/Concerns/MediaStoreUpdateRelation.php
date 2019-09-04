@@ -3,6 +3,7 @@
 namespace Singsys\LQ\Lib\Media\Relations\Concerns;
 
 use Singsys\LQ\Lib\Media\MediaUploader;
+use Illuminate\Support\Facades\Storage;
 
 trait MediaStoreUpdateRelation {
 
@@ -23,6 +24,7 @@ trait MediaStoreUpdateRelation {
             if (isset($file['id']) && !empty($file['id'])) {
                 $media = clone $this->getQuery();
                 $media = $media->where('id', $file['id'])->first();
+                Storage::delete($media->getOriginal('path'));
                 $media->update($data);
                 return $media;
             } else {
@@ -44,6 +46,12 @@ trait MediaStoreUpdateRelation {
      */
     protected function unlinkRelation() {
         //  here we also need to delete the Media File.
+        $paths = $this->getQuery()->get()->map(function ($q) {
+            return $q->getOriginal('path');
+        })->toArray();
+        if (count($paths)) {
+            Storage::delete($paths);
+        }
         $this->getQuery()->delete();
     }
 

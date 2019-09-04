@@ -35,5 +35,5 @@ class MailCompiler {
         return $html;
     }
 
-    public function bladeCom
+    // public function bladeCom
 }

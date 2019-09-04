@@ -3,8 +3,9 @@
 namespace Singsys\LQ\Lib\Media\Relations;
 
 use Singsys\LQ\Lib\Media\MediaUploader;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class MorphManyMedia extends MorphMany {
 
@@ -36,7 +37,11 @@ class MorphManyMedia extends MorphMany {
             }
             if (count($current_ids) && $detach) {
                 $unlinked = clone $this->getQuery();
+                $old_files = $unlinked->whereNotIn('id', $current_ids)->get();
                 $unlinked->whereNotIn('id', $current_ids)->delete();
+                foreach ($old_files as $old_file) {
+                    Storage::delete($old_file->getOriginal('path'));
+                }
             }
             if ($this->parent->mediaMorphRelation) {
                 $this->parent->setRelation($this->parent->mediaMorphRelation, $this->uploadedFiles);
@@ -50,5 +55,14 @@ class MorphManyMedia extends MorphMany {
     }
     public function getMedia() {
         return $this->uploadedFiles;
+    }
+    public function deleteMedia($id)
+    {
+        $media = $this->getQuery()->where('id', $id)->first();
+        if ($media) {
+            Storage::delete($media->getOriginal('path'));
+            return $media->delete();
+        }
+        return false;
     }
 }
