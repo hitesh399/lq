@@ -149,7 +149,7 @@ class LqApiMiddleware extends Authenticate
             # Check the curent user has the privilege to access the current route.
 
             if (!$permission->canAccess($role_id)) {
-                // throw new AuthorizationException;
+                throw new AuthorizationException;
             }
         } elseif ($request->header('Authorization')) {
             try {

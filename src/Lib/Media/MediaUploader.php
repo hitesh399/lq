@@ -63,7 +63,8 @@ class MediaUploader
     public function upload($file)
     {
         $file_org_name = $file->getClientOriginalName();
-        $create_file_name = $this->getFileName($this->destination, $file_org_name);
+        // $create_file_name = $this->getFileName($this->destination, $file_org_name);
+	$create_file_name = uniqid() . '_' . $file->getClientOriginalName();
         $file->storeAs($this->destination, $create_file_name);
 
         $image_size =(substr($file->getMimeType(), 0, 5) == 'image') ? getImageSize($file->getPathName()): null;
