@@ -14,7 +14,6 @@ class CreateTableDeviceUser extends Migration
     public function up()
     {
         Schema::create('device_user', function (Blueprint $table) {
-
             $table->increments('id');
 
             $table->bigInteger('user_id')->unsigned();

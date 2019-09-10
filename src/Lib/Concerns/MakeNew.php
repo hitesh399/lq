@@ -2,14 +2,15 @@
 
 namespace Singsys\LQ\Lib\Concerns;
 
-trait MakeNew {
+trait MakeNew
+{
 
     /**
      * To get id or make new recoard
      */
-    public static function getIdOrMakeNew($data, $other_data = []) {
-
-        if(!$data || empty($data)) {
+    public static function getIdOrMakeNew($data, $other_data = [])
+    {
+        if (!$data || empty($data)) {
             return null;
         }
 
@@ -19,12 +20,11 @@ trait MakeNew {
         $ids = [];
         $_this = new static;
 
-        foreach($data as $attribute) {
-            if(isset($attribute['new']) && $attribute['new']){
-                $new = $_this->create( array_merge( $attribute, $other_data ) );
+        foreach ($data as $attribute) {
+            if (isset($attribute['new']) && $attribute['new']) {
+                $new = $_this->create(array_merge($attribute, $other_data));
                 $ids[] = $new->id;
-            }
-            else {
+            } else {
                 $ids[] = $attribute['id'];
             }
         }

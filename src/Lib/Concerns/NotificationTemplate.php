@@ -6,8 +6,8 @@ use Cache;
 use Singsys\LQ\Lib\StringCompiler;
 use Illuminate\Mail\Mailable;
 
-Trait NotificationTemplate {
-
+trait NotificationTemplate
+{
     protected $timeVeriables = [];
     protected $inTimeZone = 'UTC';
     protected $outTimeZone = 'UTC';
@@ -16,14 +16,14 @@ Trait NotificationTemplate {
     /**
      * To Get the Email Template
      */
-    protected function getTemaplate($key, Array $data = [])
+    protected function getTemaplate($key, array $data = [])
     {
         $template = Cache::rememberForever('notification_template.'.$key, function () use ($key) {
             $model = $this->model();
             $data =  $model::where('name', $key)->first([
                 'name', 'subject', 'options', 'body', 'type'
             ]);
-            if(!$data) {
+            if (!$data) {
                 return null;
             }
             return [
@@ -43,7 +43,6 @@ Trait NotificationTemplate {
         $body = $string->replaceVeriables($body, $template['variables'], $data);
 
         if ($this instanceof Mailable) {
-
             $site_config = app('site_config');
             $layout_body = $site_config->get($this->emailBody);
             if ($layout_body) {

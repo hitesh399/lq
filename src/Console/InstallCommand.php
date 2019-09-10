@@ -31,18 +31,14 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-
-        if (Schema::hasTable('oauth_clients')){
-
+        if (Schema::hasTable('oauth_clients')) {
             DB::table('oauth_clients')->delete();
             //DB::table('oauth_clients')->truncate();
             $this->call('passport:keys', ['--force' => $this->option('force'), '--length' => $this->option('length')]);
             $this->call('passport:client', ['--password' => true, '--name' => 'Web']);
             $this->call('passport:client', ['--password' => true, '--name' => 'iOS']);
             $this->call('passport:client', ['--password' => true, '--name' => 'Android']);
-        }
-        else {
-
+        } else {
             $this->error('Laravel\Passport is required.');
         }
     }

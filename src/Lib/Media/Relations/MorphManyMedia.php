@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class MorphManyMedia extends MorphMany {
-
+class MorphManyMedia extends MorphMany
+{
     use Concerns\MediaStoreUpdateRelation;
 
     private $uploadedFiles = [];
@@ -23,7 +23,8 @@ class MorphManyMedia extends MorphMany {
      *
      * @return $this
      */
-    public function addMedia(array $files = null, $path = null, $thumbnails = null, $detach = true) {
+    public function addMedia(array $files = null, $path = null, $thumbnails = null, $detach = true)
+    {
         $this->uploadedFiles = new Collection();
 
         if ($files && !empty($files)) {
@@ -46,14 +47,14 @@ class MorphManyMedia extends MorphMany {
             if ($this->parent->mediaMorphRelation) {
                 $this->parent->setRelation($this->parent->mediaMorphRelation, $this->uploadedFiles);
             }
-
         } else {
             $this->unlinkRelation();
             $this->parent->setRelation($this->parent->mediaMorphRelation, null);
         }
         return $this;
     }
-    public function getMedia() {
+    public function getMedia()
+    {
         return $this->uploadedFiles;
     }
     public function deleteMedia($id)

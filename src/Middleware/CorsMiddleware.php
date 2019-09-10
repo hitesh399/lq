@@ -6,10 +6,10 @@ use Closure;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class CorsMiddleware {
-
-   public function handle($request, Closure $next)
-   {
+class CorsMiddleware
+{
+    public function handle($request, Closure $next)
+    {
         $site_config = app('site_config');
         // ALLOW OPTIONS METHOD
         $headers = [
@@ -18,22 +18,20 @@ class CorsMiddleware {
         ];
         if (env('APP_DEBUG')) {
             $headers['Access-Control-Allow-Origin'] = '*';
-        } else if ($site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN')) {
+        } elseif ($site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN')) {
             $headers['Access-Control-Allow-Origin'] = $site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN');
         }
 
-        if($request->getMethod() == "OPTIONS") {
+        if ($request->getMethod() == "OPTIONS") {
             // The client-side application can set only headers allowed in Access-Control-Allow-Headers
             return \Response::json(['status' => true], 200, $headers);
         }
 
         $response = $next($request);
 
-        foreach($headers as $key => $value) {
-
-            if($response instanceof BinaryFileResponse) {
+        foreach ($headers as $key => $value) {
+            if ($response instanceof BinaryFileResponse) {
                 $response->headers->set($key, $value);
-
             } else {
                 $response->header($key, $value);
             }

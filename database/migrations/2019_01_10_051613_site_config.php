@@ -14,7 +14,6 @@ class SiteConfig extends Migration
     public function up()
     {
         Schema::create('site_config', function (Blueprint $table) {
-
             $table->increments('id');
             $table->string('name', 100)->unique();
             $table->text('data');

@@ -32,8 +32,7 @@ class GetClient extends Command
         //personalAccessClient
         $clients =Passport::client()->get();
 
-        foreach($clients as $client) {
-
+        foreach ($clients as $client) {
             $this->line($client->name . ': ' . Crypt::encryptString($client->id));
         }
     }

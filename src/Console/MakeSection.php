@@ -32,8 +32,7 @@ class MakeSection extends Command
     {
         $section_name = trim($this->argument('name'));
 
-        if($section_name) {
-
+        if ($section_name) {
             $table_name = str_plural(snake_case(strtolower($section_name)));
             $model_name = "Models\\".$section_name;
             $policy_name = $section_name.'Policy';
@@ -45,8 +44,7 @@ class MakeSection extends Command
             $this->call("make:migration", ['name'=> $migration_name, '--create'=> $table_name]);
             $this->call("make:seed", ['name'=> $seeder_name]);
             $this->info('Section has been created.');
-        }else {
-
+        } else {
             $this->error('Section name is required.');
         }
     }

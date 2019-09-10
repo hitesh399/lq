@@ -1,32 +1,34 @@
 <?php
 
 namespace Singsys\LQ\Lib;
+
 use Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+
 //use Illuminate\Support\Str;
 
-class LqRequestLog {
-
+class LqRequestLog
+{
     public $requestLogModel = null;
     public $requestLog = null;
 
-    public function __construct() {
-
+    public function __construct()
+    {
         $this->requestLogModel = Config::get('lq.request_log_class', \Singsys\LQ\Models\RequestLog::class);
     }
 
     /**
      * Store the request data into database
      */
-    public function createRequest() {
-
+    public function createRequest()
+    {
         $request = app(Request::class);
 
-        if($request->path() == 'api/developer/request-log') {
+        if ($request->path() == 'api/developer/request-log') {
             return $this;
         }
 
@@ -53,38 +55,38 @@ class LqRequestLog {
     /**
      * End the request with a exception
      */
-    public function expection (Exception $e) {
-
+    public function expection(Exception $e)
+    {
     }
     /**
      * @param Response | JsonResponse
      */
-    public function ok( $response) {
-
-        if($response instanceof JsonResponse && $this->requestLog) {
-
+    public function ok($response)
+    {
+        if ($response instanceof JsonResponse && $this->requestLog) {
             $headers = $response->headers->all();
             $data = $response->getData();
             $status = $response->status();
 
             $this->requestLog->update(
-                array_merge( [
+                array_merge(
+                    [
                     'response_headers' => $headers,
                     'response' => $data,
                     'response_status' => $status === 500 ? 'exception' : 'ok',
                     'status_code' => $status
-                    ], $this->identifications()
+                    ],
+                    $this->identifications()
                 )
             );
         }
-
     }
 
     /**
      * To get the client id and device id
      */
-    public function identifications () {
-
+    public function identifications()
+    {
         $request = app(Request::class);
         $device_id = $request->device() ? $request->device()->id : null;
         $client_id =  $request->client() ? $request->client()->id : null;

@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-trait HasMediaRelationships {
-
+trait HasMediaRelationships
+{
     protected $mediaMorphType = null;
     public $mediaMorphRelation = null;
     /**
@@ -47,8 +47,8 @@ trait HasMediaRelationships {
         }
         return static::class;
     }
-    public function setMediaMorphType($mediaMorphType) {
-
+    public function setMediaMorphType($mediaMorphType)
+    {
         $this->mediaMorphType = $mediaMorphType;
         return $this;
     }
@@ -75,15 +75,15 @@ trait HasMediaRelationships {
     //         $instance->newQuery(), $this, $foreignKey, $ownerKey, $relation
     //     );
     // }
-     /**
-     * Define an inverse one-to-one or many JSON relationship.
-     *
-     * @param  string  $related
-     * @param  string  $foreignKey
-     * @param  string  $ownerKey
-     * @param  string  $relation
-     * @return \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
-     */
+    /**
+    * Define an inverse one-to-one or many JSON relationship.
+    *
+    * @param  string  $related
+    * @param  string  $foreignKey
+    * @param  string  $ownerKey
+    * @param  string  $relation
+    * @return \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
+    */
     public function belongsToMedia($related, $foreignKey, $ownerKey = null, $relation = null)
     {
         if (is_null($relation)) {
@@ -95,7 +95,11 @@ trait HasMediaRelationships {
         $ownerKey = $ownerKey ?: $instance->getKeyName();
 
         return $this->newBelongsToMedia(
-            $instance->newQuery(), $this, $foreignKey, $ownerKey, $relation
+            $instance->newQuery(),
+            $this,
+            $foreignKey,
+            $ownerKey,
+            $relation
         );
     }
 
@@ -113,16 +117,16 @@ trait HasMediaRelationships {
         return new HasOneMedia($query, $parent, $foreignKey, $localKey);
     }
 
-     /**
-     * Instantiate a new BelongsToJson relationship.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  \Illuminate\Database\Eloquent\Model  $child
-     * @param  string  $foreignKey
-     * @param  string  $ownerKey
-     * @param  string  $relation
-     * @return \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
-     */
+    /**
+    * Instantiate a new BelongsToJson relationship.
+    *
+    * @param  \Illuminate\Database\Eloquent\Builder  $query
+    * @param  \Illuminate\Database\Eloquent\Model  $child
+    * @param  string  $foreignKey
+    * @param  string  $ownerKey
+    * @param  string  $relation
+    * @return \Staudenmeir\EloquentJsonRelations\Relations\BelongsToJson
+    */
     // protected function newBelongsToMediaJson(Builder $query, Model $child, $foreignKey, $ownerKey, $relation)
     // {
     //     return new BelongToMediaJson($query, $child, $foreignKey, $ownerKey, $relation);
@@ -142,7 +146,7 @@ trait HasMediaRelationships {
         return new BelongToMedia($query, $child, $foreignKey, $ownerKey, $relation);
     }
 
-        /**
+    /**
      * Define a polymorphic one-to-one relationship with media.
      *
      * @param  string  $related
@@ -191,7 +195,7 @@ trait HasMediaRelationships {
      * @param  string  $localKey
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function morphManyMedia($related, $name, $mediaMorphType = null, $relation = null,  $type = null, $id = null, $localKey = null)
+    public function morphManyMedia($related, $name, $mediaMorphType = null, $relation = null, $type = null, $id = null, $localKey = null)
     {
         $this->mediaMorphType  = $mediaMorphType;
         $this->mediaMorphRelation = $relation;

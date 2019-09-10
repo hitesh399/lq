@@ -14,7 +14,6 @@ class CreateRequestLogTable extends Migration
     public function up()
     {
         Schema::create('request_logs', function (Blueprint $table) {
-
             $table->increments('id');
             $table->text('url');
             $table->string('route_name')->default('');

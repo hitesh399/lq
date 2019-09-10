@@ -6,22 +6,19 @@ use Cache;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 
-class SiteConfigLib {
-
+class SiteConfigLib
+{
     private $siteConfigurations = [];
 
     /**
      * To Get the configuration key data
      * @param $key[String]
      */
-    public function get($key, $default_val= null) {
-
-        if(isset($this->siteConfigurations[$key]) ) {
-
+    public function get($key, $default_val= null)
+    {
+        if (isset($this->siteConfigurations[$key])) {
             return $this->siteConfigurations[$key];
-        }
-        else {
-
+        } else {
             $attributes = Cache::rememberForever('site_config.'.$key, function () use ($key, $default_val) {
                 $model = $this->model();
                 $data =  $model::where('name', $key)->first([
@@ -40,16 +37,16 @@ class SiteConfigLib {
         }
     }
 
-    protected function model() {
-
+    protected function model()
+    {
         return config('lq.site_config_class');
     }
 
     /**
      * To set the datatype.
      */
-    protected function  setAttributeCaste($val, $options, $key) {
-
+    protected function setAttributeCaste($val, $options, $key)
+    {
         $dataType = isset($options['dataType']) && $options['dataType'] ? isset($options['dataType']) : null;
 
         $data =  null;
@@ -57,19 +54,16 @@ class SiteConfigLib {
         /**
          * DEcryp the val if attribute is secure.
          */
-        if(isset($options['secure']) && $options['secure'] ) {
-
+        if (isset($options['secure']) && $options['secure']) {
             $val =  Crypt::decrypt($val);
         }
 
         /**
          * Transform the data base on Attribute data type.
          */
-        if($dataType == 'json') {
-
+        if ($dataType == 'json') {
             $val =  json_decode($val);
         }
         return $val;
-
     }
 }

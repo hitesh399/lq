@@ -14,7 +14,6 @@ class CreateRolePermissionFields extends Migration
     public function up()
     {
         Schema::create('role_permission_fields', function (Blueprint $table) {
-
             $table->increments('id');
 
             $table->unsignedInteger('role_id');

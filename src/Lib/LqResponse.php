@@ -13,8 +13,8 @@ class LqResponse
     public $trace =  null;
     public $current_permission =  null;
 
-    public function out ($status) {
-
+    public function out($status)
+    {
         return  response()->json([
             'data' => $this->data,
             'error_code' => $this->error_code,

@@ -14,7 +14,6 @@ class DeviceTable extends Migration
     public function up()
     {
         Schema::create('devices', function (Blueprint $table) {
-
             $table->bigIncrements('id');
             $table->string('name')->default('');
             $table->string('device_id', 100)->unique();

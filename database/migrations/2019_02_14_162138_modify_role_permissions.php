@@ -22,7 +22,6 @@ class ModifyRolePermissions extends Migration
 
             $table->dropIndex('role_permissions_role_id_foreign');
         }); */
-
     }
 
     /**
@@ -32,7 +31,6 @@ class ModifyRolePermissions extends Migration
      */
     public function down()
     {
-
         DB::statement('ALTER TABLE `role_permissions` DROP INDEX `role_permissions_role_id_permission_id_unique`, ADD INDEX role_permissions_role_id_foreign (role_id)');
     }
 }

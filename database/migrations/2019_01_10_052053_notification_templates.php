@@ -14,12 +14,11 @@ class NotificationTemplates extends Migration
     public function up()
     {
         Schema::create('notification_templates', function (Blueprint $table) {
-
             $table->increments('id');
             $table->string('name', 100)->unique();
             $table->string('subject', 300)->default('');
             $table->text('body');
-            $table->enum('type',['sms', 'email', 'push_notification', 'database'])->default('email');
+            $table->enum('type', ['sms', 'email', 'push_notification', 'database'])->default('email');
             $table->json('options')->nullable();
             $table->timestamps();
         });

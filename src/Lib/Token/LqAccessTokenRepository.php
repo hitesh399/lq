@@ -8,7 +8,8 @@ use DateTime;
 use Laravel\Passport\Events\AccessTokenCreated;
 use Laravel\Passport\Token;
 
-class LqAccessTokenRepository extends AccessTokenRepository {
+class LqAccessTokenRepository extends AccessTokenRepository
+{
 
     /**
      * {@inheritdoc}
@@ -40,6 +41,5 @@ class LqAccessTokenRepository extends AccessTokenRepository {
             $accessTokenEntity->getUserIdentifier(),
             $accessTokenEntity->getClient()->getIdentifier()
         ));
-
     }
 }

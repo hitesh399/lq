@@ -32,8 +32,7 @@ class CacheSiteConfig extends Command
     {
         $model = config('lq.site_config_class');
         $configs = $model::get(['name']);
-        foreach($configs as $config) {
-
+        foreach ($configs as $config) {
             Cache::forget('site_config.'.$config->name);
             app('site_config')->get($config->name);
         }

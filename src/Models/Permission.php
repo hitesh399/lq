@@ -6,20 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that are mass assignable.
+    *
+    * @var array
+    */
     protected $fillable = [
         'name', 'is_public', 'title', 'description', 'encrypted', 'permission_group_id', 'limitations'
     ];
 
-     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that should be cast to native types.
+    *
+    * @var array
+    */
     protected $casts = [
         'name'=> 'string',
         'is_public'=> 'string',
@@ -34,15 +34,16 @@ class Permission extends Model
     /**
      * To get the permission group detail
      */
-    public function permissionGroup() {
+    public function permissionGroup()
+    {
         return $this->belongsTo(PermissionGroup::class);
     }
 
     /**
      * To get the permission field data
      */
-    public function permissionFields() {
-
+    public function permissionFields()
+    {
         return $this->hasMany(PermissionField::class);
     }
 }

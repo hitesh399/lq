@@ -25,7 +25,7 @@ class RoleTable extends Migration
             $table->string('title')->default('');
             $table->string('description', 800)->default('');
             $table->json('portal')->nullable()->comment('To define the role access portal backend, frontend or mobile panel.');
-            $table->enum('choosable',['Y','N'])->default('Y')->comment('TO define is role assignable or only manage the category.');
+            $table->enum('choosable', ['Y','N'])->default('Y')->comment('TO define is role assignable or only manage the category.');
             $table->string('landing_page')->default('')->comment('The url to redirect the user after login.');
             $table->unique(['name','parent_role_id']);
             $table->timestamps();

@@ -9,8 +9,8 @@ class RolePermissionField extends Model
     /**
      * Get permission fields Detail.
      */
-    function permissionFields() {
-
+    public function permissionFields()
+    {
         return $this->hasOne(PermissionField::class, 'id', 'permission_field_id');
     }
 }

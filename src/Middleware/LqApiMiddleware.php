@@ -23,9 +23,12 @@ class LqApiMiddleware extends Authenticate
      */
     public function handle($request, Closure $next, ...$guard)
     {
-
-        $request::macro('client', function () {return null; });
-        $request::macro('device', function () {return null; });
+        $request::macro('client', function () {
+            return null;
+        });
+        $request::macro('device', function () {
+            return null;
+        });
 
         # Save Request Error Log into Database
         if (env('LQ_WRITE_ERROR')) {
@@ -56,8 +59,8 @@ class LqApiMiddleware extends Authenticate
     /**
      * throw exception, if Client id is not valid.
      */
-    private function invalidClientResponse() {
-
+    private function invalidClientResponse()
+    {
         app('Lq\Response')->message = trans('auth.invalid_client');
         throw ValidationException::withMessages([]);
     }
@@ -65,8 +68,8 @@ class LqApiMiddleware extends Authenticate
     /**
      * Throw the exception, if Device is not present in header
      */
-    private function invalidDeviceIdResponse() {
-
+    private function invalidDeviceIdResponse()
+    {
         app('Lq\Response')->message = trans('auth.invalid_device_id');
         throw ValidationException::withMessages([]);
     }
@@ -78,7 +81,6 @@ class LqApiMiddleware extends Authenticate
     {
         $lq_client = new ClientRepository();
         try {
-
             $client_id = \Crypt::decryptString($request->header('client-id'));
             $client = $lq_client->getClient($client_id);
 
@@ -88,9 +90,7 @@ class LqApiMiddleware extends Authenticate
             $request::macro('client', function () use ($client) {
                 return $client;
             });
-
         } catch (DecryptException $e) {
-
             $this->invalidClientResponse();
         }
     }
@@ -98,15 +98,14 @@ class LqApiMiddleware extends Authenticate
     /**
      * To Find and create the device
      */
-    private function findDeviceInfo($request) {
-
+    private function findDeviceInfo($request)
+    {
         if (!$request->header('device-id')) {
             $this->invalidDeviceIdResponse();
         }
 
         $device_id = $request->header('device-id');
         $request::macro('device', function () use ($device_id, $request) {
-
             $model = config('lq.device_class');
             return $model::firstOrCreate(['device_id' => $device_id], ['device_id' => $device_id, 'client_id' => $request->client()->id]);
         });
@@ -137,9 +136,8 @@ class LqApiMiddleware extends Authenticate
 
             # Removing database table column from response.
             if ($current_permission && !empty($current_permission['fields'])) {
-
                 $fields = $current_permission['fields'];
-                array_walk($fields, function (&$field){
+                array_walk($fields, function (&$field) {
                     unset($field['table_columns']);
                     return $field;
                 });
@@ -153,13 +151,10 @@ class LqApiMiddleware extends Authenticate
             if (!$permission->canAccess($role_id)) {
                 // throw new AuthorizationException;
             }
-
-        } else if ($request->header('Authorization')) {
-
+        } elseif ($request->header('Authorization')) {
             try {
                 $this->authenticate($request, $guards);
-            } catch(\Exception $e) {
-
+            } catch (\Exception $e) {
             }
         }
     }

@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
-class LqServiceProvider extends ServiceProvider {
+class LqServiceProvider extends ServiceProvider
+{
 
     /**
      * Bootstrap the application services.
@@ -86,9 +87,9 @@ class LqServiceProvider extends ServiceProvider {
             ], 'lq-config');
         }
     }
-    protected function registeredMacros($request) {
-
-        EloquentBuilder::macro('total', function ()use ($request) {
+    protected function registeredMacros($request)
+    {
+        EloquentBuilder::macro('total', function () use ($request) {
             return (new ModelMacros($this, $request))->total();
         });
         EloquentBuilder::macro('getSql', function () use ($request) {
@@ -97,7 +98,7 @@ class LqServiceProvider extends ServiceProvider {
         EloquentBuilder::macro('lqPaginate', function ($columns = ['*'], $fetch_total_for_all_page = false) use ($request) {
             return (new ModelMacros($this, $request))->lqPaginate($columns, $fetch_total_for_all_page);
         });
-        EloquentBuilder::macro('lqUpdate', function (Array $values) use ($request) {
+        EloquentBuilder::macro('lqUpdate', function (array $values) use ($request) {
             return (new ModelMacros($this, $request))->lqUpdate($values);
         });
     }

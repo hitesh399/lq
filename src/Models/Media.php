@@ -16,11 +16,11 @@ class Media extends Model
         'path', 'type', 'thumbnails', 'info', 'mediable_type', 'mediable_id', 'user_id'
     ];
 
-     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that should be cast to native types.
+    *
+    * @var array
+    */
     protected $casts = [
         'thumbnails' => 'array',
         'info' => 'array',
@@ -31,7 +31,8 @@ class Media extends Model
         'type'=> 'string'
     ];
 
-    public function getPathAttribute($path) {
+    public function getPathAttribute($path)
+    {
         return $path ? \Storage::url($path) : null;
     }
 }

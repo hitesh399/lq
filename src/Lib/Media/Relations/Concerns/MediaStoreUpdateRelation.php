@@ -5,7 +5,8 @@ namespace Singsys\LQ\Lib\Media\Relations\Concerns;
 use Singsys\LQ\Lib\Media\MediaUploader;
 use Illuminate\Support\Facades\Storage;
 
-trait MediaStoreUpdateRelation {
+trait MediaStoreUpdateRelation
+{
 
     /**
      * To upload the file in scource directory and insert file info and relation in media table
@@ -28,14 +29,13 @@ trait MediaStoreUpdateRelation {
                 $media->update($data);
                 return $media;
             } else {
-               return $this->create($data);
+                return $this->create($data);
             }
-
-        } else if (isset($file['id']) && !empty($file['id'])) {
+        } elseif (isset($file['id']) && !empty($file['id'])) {
             $media = clone $this->getQuery();
             $media = $media->where('id', $file['id'])->first();
             if ($media) {
-               return $media;
+                return $media;
             }
         }
     }
@@ -44,7 +44,8 @@ trait MediaStoreUpdateRelation {
      * To remove all record from media table base on relation
      *
      */
-    protected function unlinkRelation() {
+    protected function unlinkRelation()
+    {
         //  here we also need to delete the Media File.
         $paths = $this->getQuery()->get()->map(function ($q) {
             return $q->getOriginal('path');

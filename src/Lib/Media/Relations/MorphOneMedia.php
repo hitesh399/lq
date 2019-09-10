@@ -5,8 +5,8 @@ namespace Singsys\LQ\Lib\Media\Relations;
 use Singsys\LQ\Lib\Media\MediaUploader;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class MorphOneMedia extends MorphOne {
-
+class MorphOneMedia extends MorphOne
+{
     use Concerns\MediaStoreUpdateRelation;
 
     private $uploadedFile = [];
@@ -20,10 +20,11 @@ class MorphOneMedia extends MorphOne {
      *
      * @return $this
      */
-    public function addMedia(Array $file = null, $path = null, $thumbnails = null) {
+    public function addMedia(array $file = null, $path = null, $thumbnails = null)
+    {
         $media = clone $this->getQuery();
         $media = $media->first();
-        if ($media && isset($file['file']) && $file['file'] ) {
+        if ($media && isset($file['file']) && $file['file']) {
             $file['id'] = $media->id;
         }
         $this->uploadedFile = $this->_updloadFileUpdateRelation($file, $path, $thumbnails);
@@ -35,7 +36,8 @@ class MorphOneMedia extends MorphOne {
         }
         return $this;
     }
-    public function getMedia() {
+    public function getMedia()
+    {
         return $this->uploadedFile;
     }
 }

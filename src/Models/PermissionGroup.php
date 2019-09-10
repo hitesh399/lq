@@ -18,15 +18,13 @@ class PermissionGroup extends Model
         'name', 'description'
     ];
 
-     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that should be cast to native types.
+    *
+    * @var array
+    */
     protected $casts = [
         'name'=> 'string',
         'description'=> 'string'
     ];
-
-
 }

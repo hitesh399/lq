@@ -16,7 +16,8 @@ class ChangeLandingPageUrlInRole extends Migration
         $charset = Config::get('database.connections.mysql.charset');
         $collation = Config::get('database.connections.mysql.collation');
 
-        \DB::statement("ALTER TABLE `roles` CHANGE `landing_page` `landing_portal` VARCHAR(100)
+        \DB::statement(
+            "ALTER TABLE `roles` CHANGE `landing_page` `landing_portal` VARCHAR(100)
             CHARACTER SET {$charset} COLLATE {$collation} NOT NULL DEFAULT ''
             COMMENT 'Portal Name, where user will redirect after login';"
         );
@@ -32,7 +33,8 @@ class ChangeLandingPageUrlInRole extends Migration
         $charset = Config::get('database.connections.mysql.charset');
         $collation = Config::get('database.connections.mysql.collation');
 
-        \DB::statement("ALTER TABLE `roles` CHANGE `landing_portal` `landing_page` VARCHAR(200)
+        \DB::statement(
+            "ALTER TABLE `roles` CHANGE `landing_portal` `landing_page` VARCHAR(200)
             CHARACTER SET {$charset} COLLATE {$collation} NOT NULL DEFAULT ''
             COMMENT 'URL where user will redirect after login.';"
         );

@@ -1,15 +1,17 @@
 <?php
 
 namespace Singsys\LQ\Lib;
+
 use Carbon\Carbon;
 
-class StringCompiler {
-
+class StringCompiler
+{
     protected $timeVeriables = [];
     protected $inTimeZone = 'UTC';
     protected $outTimeZone = 'UTC';
 
-    public function __construct(Array $timeVeriables = [], $inTimeZone = 'UTC', $outTimeZone = 'UTC') {
+    public function __construct(array $timeVeriables = [], $inTimeZone = 'UTC', $outTimeZone = 'UTC')
+    {
         $this->timeVeriables = $timeVeriables;
         $this->inTimeZone = $inTimeZone;
         $this->outTimeZone = $outTimeZone;
@@ -28,9 +30,9 @@ class StringCompiler {
             if ($time_format) {
                 $val = Carbon::parse($val, $this->inTimeZone)->timezone($this->outTimeZone)->format($time_format);
             }
-            if(isset($matches[0]) && is_array($matches[0])) {
+            if (isset($matches[0]) && is_array($matches[0])) {
                 $mt = $matches[0];
-                foreach($mt as $mtk) {
+                foreach ($mt as $mtk) {
                     $html = str_replace($mtk, $val, $html);
                 }
             }
@@ -38,7 +40,8 @@ class StringCompiler {
         return $html;
     }
 
-    public function makePureString($string, $data) {
+    public function makePureString($string, $data)
+    {
         return $string;
     }
 }

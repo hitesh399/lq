@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Passport\Passport;
 use Config;
 
-
 class RequestLog extends Model
 {
 
@@ -31,11 +30,11 @@ class RequestLog extends Model
         'response'
     ];
 
-     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+    /**
+    * The attributes that should be cast to native types.
+    *
+    * @var array
+    */
     protected $casts = [
         'url'=> 'string',
         'route_name'=> 'string',
