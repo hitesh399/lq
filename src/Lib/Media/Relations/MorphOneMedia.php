@@ -24,7 +24,7 @@ class MorphOneMedia extends MorphOne
     {
         $media = clone $this->getQuery();
         $media = $media->first();
-        if ($media) {
+        if ($media && isset($file['file']) && $file['file'] ) {
             $file['id'] = $media->id;
         }
         $this->uploadedFile = $this->_updloadFileUpdateRelation($file, $path, $thumbnails);
