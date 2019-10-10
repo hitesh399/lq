@@ -1,21 +1,18 @@
 <?php
+
 namespace Singsys\LQ;
 
 use Response;
 use Illuminate\Http\Request;
 use Singsys\LQ\Macros\ModelMacros;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class LqServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap the application services.
-     *
-     * @return void
      */
     public function boot(Request $request)
     {
@@ -32,10 +29,9 @@ class LqServiceProvider extends ServiceProvider
         }
         $this->registeredMacros($request);
     }
+
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
@@ -63,21 +59,21 @@ class LqServiceProvider extends ServiceProvider
         //     return $this;
         // });
     }
+
     /**
      * Register LQ's migration files.
-     *
-     * @return void
      */
     protected function registerMigrations()
     {
-        if (Schema::hasTable('users')) {
-            return $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        if ($this->app->runningInConsole()) {
+            if (Schema::hasTable('users')) {
+                return $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+            }
         }
     }
+
     /**
      * Setup the resource publishing groups for Passport.
-     *
-     * @return void
      */
     protected function offerPublishing()
     {
@@ -87,6 +83,7 @@ class LqServiceProvider extends ServiceProvider
             ], 'lq-config');
         }
     }
+
     protected function registeredMacros($request)
     {
         EloquentBuilder::macro('total', function () use ($request) {
