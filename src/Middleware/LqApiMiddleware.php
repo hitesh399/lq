@@ -6,19 +6,18 @@ use Closure;
 use Singsys\LQ\Lib\ClientRepository;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Contracts\Auth\Factory as Auth;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LqApiMiddleware extends Authenticate
 {
-
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param string|null              $guard
+     *
      * @return mixed
      */
     public function handle($request, Closure $next, ...$guard)
@@ -30,21 +29,21 @@ class LqApiMiddleware extends Authenticate
             return null;
         });
 
-        # Save Request Error Log into Database
+        // Save Request Error Log into Database
         if (env('LQ_WRITE_ERROR')) {
             app('LqRequestLog')->createRequest();
         }
 
-        /**
+        /*
          * Client ID should be present in every request header
          */
         $this->verifyClient($request);
 
-        /**
+        /*
          * the device id should be present in every request header
          */
         $this->findDeviceInfo($request);
-        /**
+        /*
          * Check the Route Access
          */
         $this->checkRouteAccess($request, ['api']);
@@ -56,6 +55,7 @@ class LqApiMiddleware extends Authenticate
 
         return $response;
     }
+
     /**
      * throw exception, if Client id is not valid.
      */
@@ -66,7 +66,7 @@ class LqApiMiddleware extends Authenticate
     }
 
     /**
-     * Throw the exception, if Device is not present in header
+     * Throw the exception, if Device is not present in header.
      */
     private function invalidDeviceIdResponse()
     {
@@ -75,7 +75,7 @@ class LqApiMiddleware extends Authenticate
     }
 
     /**
-     * To verify the client id
+     * To verify the client id.
      */
     private function verifyClient($request)
     {
@@ -96,7 +96,7 @@ class LqApiMiddleware extends Authenticate
     }
 
     /**
-     * To Find and create the device
+     * To Find and create the device.
      */
     private function findDeviceInfo($request)
     {
@@ -107,8 +107,19 @@ class LqApiMiddleware extends Authenticate
         $device_id = $request->header('device-id');
         $request::macro('device', function () use ($device_id, $request) {
             $model = config('lq.device_class');
+
             return $model::firstOrCreate(['device_id' => $device_id], ['device_id' => $device_id, 'client_id' => $request->client()->id]);
         });
+    }
+
+    private function _authenticateWithException($request)
+    {
+        if ($request->header('Authorization')) {
+            try {
+                $this->authenticate($request, $guards);
+            } catch (\Exception $e) {
+            }
+        }
     }
 
     /**
@@ -124,38 +135,44 @@ class LqApiMiddleware extends Authenticate
 
         $lq_response = app('Lq\Response');
 
-        if (\Config::get('lq.check_authentication') && $current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
-            # Check the user does have the valid token to access current route.
-            $this->authenticate($request, $guards);
-
-            # Get Login user Role id.
-            $role_id = $request->user()->role_id;
-
-            # Add Current Permission Limitation and allowed field in final response.
-            $current_permission = $permission->roleCurrentPermission($role_id);
-
-            # Removing database table column from response.
-            if ($current_permission && !empty($current_permission['fields'])) {
-                $fields = $current_permission['fields'];
-                array_walk($fields, function (&$field) {
-                    unset($field['table_columns']);
-                    return $field;
-                });
-                $current_permission['fields'] = $fields;
+        if ($current_permission && isset($current_permission['is_public']) && $current_permission['is_public'] == 'N') {
+            // Check the user does have the valid token to access current route.
+            if (\Config::get('lq.check_authentication')) {
+                $this->authenticate($request, $guards);
+            } else {
+                $this->_authenticateWithException($request);
             }
 
-            $lq_response->current_permission = $current_permission;
+            if ($request->user()) {
+                // Get Login user Role id.
+                $role_id = $request->user()->role_id;
 
-            # Check the curent user has the privilege to access the current route.
+                // Add Current Permission Limitation and allowed field in final response.
+                $current_permission = $permission->roleCurrentPermission($role_id);
 
-            if (!$permission->canAccess($role_id)) {
-                throw new AuthorizationException;
+                // Removing database table column from response.
+                if ($current_permission && !empty($current_permission['fields'])) {
+                    $fields = $current_permission['fields'];
+                    array_walk(
+                        $fields,
+                        function (&$field) {
+                            unset($field['table_columns']);
+
+                            return $field;
+                        }
+                    );
+                    $current_permission['fields'] = $fields;
+                }
+
+                $lq_response->current_permission = $current_permission;
+                // Check the curent user has the privilege to access the current route.
+
+                if (!$permission->canAccess($role_id) && \Config::get('lq.check_authentication')) {
+                    throw new AuthorizationException();
+                }
             }
         } elseif ($request->header('Authorization')) {
-            try {
-                $this->authenticate($request, $guards);
-            } catch (\Exception $e) {
-            }
+            $this->_authenticateWithException($request);
         }
     }
 }
