@@ -3,11 +3,12 @@
 namespace Singsys\LQ\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Singsys\LQ\Lib\ClientRepository;
-use Illuminate\Contracts\Encryption\DecryptException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class LqApiMiddleware extends Authenticate
 {
@@ -77,7 +78,7 @@ class LqApiMiddleware extends Authenticate
     /**
      * To verify the client id.
      */
-    private function verifyClient($request)
+    private function verifyClient(Request $request)
     {
         $lq_client = new ClientRepository();
         try {
@@ -98,7 +99,7 @@ class LqApiMiddleware extends Authenticate
     /**
      * To Find and create the device.
      */
-    private function findDeviceInfo($request)
+    private function findDeviceInfo(Request $request)
     {
         if (!$request->header('device-id')) {
             $this->invalidDeviceIdResponse();
@@ -112,7 +113,7 @@ class LqApiMiddleware extends Authenticate
         });
     }
 
-    private function _authenticateWithException($request)
+    private function _authenticateWithException(Request $request)
     {
         if ($request->header('Authorization')) {
             try {
@@ -120,6 +121,36 @@ class LqApiMiddleware extends Authenticate
             } catch (\Exception $e) {
             }
         }
+    }
+
+    private function _setCurrentRoleIdsInPermissonRepo(Request $request): void
+    {
+        $permission = app('permission');
+        // Set User Current Role Id
+        $user_device = \Auth::user()->devices()->where(
+            'devices.id', $request->device()->id
+        )->first();
+
+        if ($user_device) {
+            if ($request->client()->role_access_type == 'one_at_time') {
+                $permission->setCurrentRoleIds([$user_device->pivot->role_id]);
+            } else {
+                $permission->setCurrentRoleIds(
+                    $request->user()->roles->pluck('id')->toArray()
+                );
+            }
+        }
+    }
+
+    private function _onlyAppRoles(Request $request): void
+    {
+        $client_id = $request->client()->id;
+        $roles = $request->user()->roles->filter(
+            function ($item, $key) use ($client_id) {
+                return in_array($client_id, $item->client_ids);
+            }
+        );
+        $request->user()->setRelation('roles', $roles);
     }
 
     /**
@@ -145,10 +176,16 @@ class LqApiMiddleware extends Authenticate
 
             if ($request->user()) {
                 // Get Login user Role id.
-                $role_id = $request->user()->role_id;
+
+                $this->_onlyAppRoles($request);
+                $this->_setCurrentRoleIdsInPermissonRepo($request);
+                $active_role_id = $permission->canAccess();
+                if ($active_role_id) {
+                    $permission->setActiveRoleId($active_role_id);
+                }
 
                 // Add Current Permission Limitation and allowed field in final response.
-                $current_permission = $permission->roleCurrentPermission($role_id);
+                $current_permission = $permission->getCurrentRolePermissions();
 
                 // Removing database table column from response.
                 if ($current_permission && !empty($current_permission['fields'])) {
@@ -167,7 +204,7 @@ class LqApiMiddleware extends Authenticate
                 $lq_response->current_permission = $current_permission;
                 // Check the curent user has the privilege to access the current route.
 
-                if (!$permission->canAccess($role_id) && \Config::get('lq.check_authentication')) {
+                if (!$active_role_id && \Config::get('lq.check_authentication')) {
                     throw new AuthorizationException();
                 }
             }

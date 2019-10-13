@@ -8,8 +8,6 @@ class RolePermissionTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -27,14 +25,12 @@ class RolePermissionTable extends Migration
                 ->onDelete('cascade');
 
             $table->json('limitations')->nullable();
-            $table->timestamps();
+            $table->unique(['role_id', 'permission_id']);
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

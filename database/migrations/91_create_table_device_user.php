@@ -8,8 +8,6 @@ class CreateTableDeviceUser extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -25,19 +23,21 @@ class CreateTableDeviceUser extends Migration
             $table->foreign('device_id')
                 ->references('id')->on('devices')
                 ->onDelete('CASCADE');
-
+            $table->unsignedInteger('role_id')->nullable();
+            $table->foreign('role_id')
+                    ->references('id')->on('roles')
+                    ->onDelete('cascade');
             $table->unSignedInteger('login_index');
-            $table->enum('active', ['Yes','No'])->default('Yes');
+            $table->string('timezone')->nullable();
+            $table->enum('active', ['Yes', 'No'])->default('Yes');
             $table->unique(['user_id', 'device_id']);
             $table->json('settings')->nullable();
-            $table->enum('revoked', ['0','1'])->default('0');
+            $table->enum('revoked', ['0', '1'])->default('0');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

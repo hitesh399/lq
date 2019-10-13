@@ -8,8 +8,6 @@ class SiteConfig extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -17,6 +15,8 @@ class SiteConfig extends Migration
             $table->increments('id');
             $table->string('name', 100)->unique();
             $table->text('data');
+            $table->enum('autoload', ['1', '0'])->default('0');
+            $table->enum('config_type', ['global', 'private'])->default('global');
             $table->string('config_group', 100)->nullable();
             $table->json('options')->nullable();
             $table->timestamps();
@@ -25,8 +25,6 @@ class SiteConfig extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

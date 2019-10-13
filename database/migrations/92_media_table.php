@@ -8,8 +8,6 @@ class MediaTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -27,14 +25,13 @@ class MediaTable extends Migration
             $table->json('info')->nullable();
             $table->string('mediable_id')->nullable();
             $table->string('mediable_type')->nullable();
+            $table->string('driver')->default('public');
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {

@@ -75,9 +75,10 @@ class MediaUploader
 
         $attribute['path'] = $this->destination.'/'.$create_file_name;
         $attribute['type'] = $file->getMimeType();
-
+        $drive = \Config::get('filesystems.default', 'public');
         $attribute['info'] = [
             'size' => $file->getSize(),
+            'drive' => $drive,
             'dimension' => $image_size ? ['width' => $image_size[0], 'height' => $image_size[1]] : null,
             'original_name' => $file_org_name,
         ];
