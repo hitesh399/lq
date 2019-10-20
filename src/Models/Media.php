@@ -32,6 +32,8 @@ class Media extends Model
 
     public function getPathAttribute($path)
     {
-        return $path ? \Storage::url($path) : null;
+        return $path ? (
+            $this->getAttribute('driver') ? \Storage::disk($this->getAttribute('driver'))->url($path) : \Storage::url($path)
+        ) : null;
     }
 }

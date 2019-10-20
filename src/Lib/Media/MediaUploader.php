@@ -66,6 +66,7 @@ class MediaUploader
      */
     public function upload($file)
     {
+        $drive = \Config::get('filesystems.default', 'public');
         $file_org_name = $file->getClientOriginalName();
         $create_file_name = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
         $file->storeAs($this->destination, $create_file_name);
@@ -75,10 +76,9 @@ class MediaUploader
 
         $attribute['path'] = $this->destination.'/'.$create_file_name;
         $attribute['type'] = $file->getMimeType();
-        $drive = \Config::get('filesystems.default', 'public');
+        $attribute['drive'] = $drive;
         $attribute['info'] = [
             'size' => $file->getSize(),
-            'drive' => $drive,
             'dimension' => $image_size ? ['width' => $image_size[0], 'height' => $image_size[1]] : null,
             'original_name' => $file_org_name,
         ];
