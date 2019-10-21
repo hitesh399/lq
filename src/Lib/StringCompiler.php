@@ -3,6 +3,7 @@
 namespace Singsys\LQ\Lib;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 
 class StringCompiler
 {
@@ -16,6 +17,7 @@ class StringCompiler
         $this->inTimeZone = $inTimeZone;
         $this->outTimeZone = $outTimeZone;
     }
+
     /**
      * To Replace the veriable from html.
      */
@@ -26,9 +28,11 @@ class StringCompiler
         foreach ($variables as $var) {
             $time_format = isset($this->timeVeriables[$var]) ? $this->timeVeriables[$var] : null;
             preg_match_all('/\{+'.$var.'+\}/i', $html, $matches);
-            $val = array_get($data, $var);
+            $val = Arr::get($data, $var);
             if ($time_format) {
-                $val = Carbon::parse($val, $this->inTimeZone)->timezone($this->outTimeZone)->format($time_format);
+                $val = Carbon::parse(
+                    $val, $this->inTimeZone
+                )->timezone($this->outTimeZone)->format($time_format);
             }
             if (isset($matches[0]) && is_array($matches[0])) {
                 $mt = $matches[0];
@@ -37,6 +41,7 @@ class StringCompiler
                 }
             }
         }
+
         return $html;
     }
 
