@@ -2,7 +2,6 @@
 
 namespace Singsys\LQ\Lib\Media\Relations;
 
-use Singsys\LQ\Lib\Media\MediaUploader;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -16,10 +15,10 @@ class MorphManyMedia extends MorphMany
     /**
      * Store the file in default storage and update the relation in media table.
      *
-     * @param array  $files     [Array Structure should be [[file => Blob, id => if already added]] ]
-     * @param string $path      [Destination path after Storage base path]
-     * @param boolean $detach   [false if don't want to remove previous uploaded files.]
-     * @param array $thumbnails [Thumbnails]
+     * @param array  $files      [Array Structure should be [[file => Blob, id => if already added]] ]
+     * @param string $path       [Destination path after Storage base path]
+     * @param bool   $detach     [false if don't want to remove previous uploaded files.]
+     * @param array  $thumbnails [Thumbnails]
      *
      * @return $this
      */
@@ -41,29 +40,54 @@ class MorphManyMedia extends MorphMany
                 $old_files = $unlinked->whereNotIn('id', $current_ids)->get();
                 $unlinked->whereNotIn('id', $current_ids)->delete();
                 foreach ($old_files as $old_file) {
-                    Storage::delete($old_file->getOriginal('path'));
+                    $this->deleteFile($old_file);
                 }
             }
             if ($this->parent->mediaMorphRelation) {
-                $this->parent->setRelation($this->parent->mediaMorphRelation, $this->uploadedFiles);
+                $this->parent->setRelation(
+                    $this->parent->mediaMorphRelation, $this->uploadedFiles
+                );
             }
         } else {
             $this->unlinkRelation();
             $this->parent->setRelation($this->parent->mediaMorphRelation, null);
         }
+
         return $this;
     }
-    public function getMedia()
+
+    /**
+     * To attach the media in this relation.
+     *
+     * @param array $ids [Media table primary keys]
+     *
+     * @return self
+     */
+    public function sync(array $ids)
     {
-        return $this->uploadedFiles;
-    }
-    public function deleteMedia($id)
-    {
-        $media = $this->getQuery()->where('id', $id)->first();
-        if ($media) {
-            Storage::delete($media->getOriginal('path'));
-            return $media->delete();
+        $old_media = clone $this->getQuery();
+        if (count($ids)) {
+            $old_media->whereNotIn('id', $ids);
         }
-        return false;
+        $this->deleteFiles($old_media->get());
+        $old_media->delete();
+
+        if (count($ids) === 0) {
+            return $this;
+        }
+
+        $media_model = \Config::get('lq.media_model_instance');
+        $new_media = new $media_model();
+
+        $new_media = $new_media->whereIn('id', $ids);
+        $new_media->update($this->make()->toArray());
+
+        if ($this->parent->mediaMorphRelation) {
+            $this->parent->setRelation(
+                $this->parent->mediaMorphRelation, $new_media->get()
+            );
+        }
+
+        return $this;
     }
 }

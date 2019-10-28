@@ -2,19 +2,38 @@
 
 namespace Singsys\LQ\Lib\Media\Relations\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use Singsys\LQ\Lib\Media\MediaUploader;
-use Illuminate\Support\Facades\Storage;
+use Singsys\LQ\Lib\Media\DeleteMediaFile;
+use Illuminate\Database\Eloquent\Collection;
 
 trait MediaStoreUpdateRelation
 {
+    /**
+     * To delete media file and media data from database.
+     *
+     * @param int $id [Media Table primary id]
+     *
+     * @return bool
+     */
+    public function deleteMedia($id)
+    {
+        $media = $this->getQuery()->where('id', $id)->first();
+        if ($media) {
+            $this->deleteFile($media);
+
+            return $media->delete();
+        }
+
+        return false;
+    }
 
     /**
-     * To upload the file in scource directory and insert file info and relation in media table
+     * To upload the file in scource directory and insert file info and relation in media table.
      *
      * @param array $file [Array Structure should be [file => Blob, id => if already added] ]
      *
      * @return \Illuminate\Database\Eloquent\Collection
-     * @return void
      */
     private function _updloadFileUpdateRelation($file, $path, $thumbnails)
     {
@@ -25,8 +44,9 @@ trait MediaStoreUpdateRelation
             if (isset($file['id']) && !empty($file['id'])) {
                 $media = clone $this->getQuery();
                 $media = $media->where('id', $file['id'])->first();
-                Storage::delete($media->getOriginal('path'));
+                $this->deleteFile($media);
                 $media->update($data);
+
                 return $media;
             } else {
                 return $this->create($data);
@@ -41,18 +61,20 @@ trait MediaStoreUpdateRelation
     }
 
     /**
-     * To remove all record from media table base on relation
+     * To remove all record from media table base on relation.
      *
+     * @return void|
      */
     protected function unlinkRelation()
     {
         //  here we also need to delete the Media File.
-        $paths = $this->getQuery()->get()->map(function ($q) {
-            return $q->getOriginal('path');
-        })->toArray();
-        if (count($paths)) {
-            Storage::delete($paths);
-        }
+        $this->getQuery()->get()->map(
+            function ($q) {
+                $this->deleteFile($q);
+
+                return $q;
+            }
+        );
         $this->getQuery()->delete();
     }
 
@@ -67,6 +89,46 @@ trait MediaStoreUpdateRelation
     {
         $this->parent->setMediaMorphType($type);
         $this->morphClass = $this->parent->getMorphClass();
+
+        return $this;
+    }
+
+    /**
+     * Get the media collection.
+     *
+     * @return Illuminate\Database\Eloquent\Collection
+     */
+    public function getMedia()
+    {
+        return $this->uploadedFiles;
+    }
+
+    /**
+     * To delete media file.
+     *
+     * @param Illuminate\Database\Eloquent\Model $media [Media model]
+     *
+     * @return self
+     */
+    protected function deleteFile(Model $media)
+    {
+        $media = new DeleteMediaFile($media);
+        $media->delete();
+
+        return $this;
+    }
+
+    /**
+     * To delete media file in collection.
+     *
+     * @param Illuminate\Database\Eloquent\Collection $collections [Media collection]
+     *
+     * @return self
+     */
+    protected function deleteFiles(Collection $collections)
+    {
+        DeleteMediaFile::deleteCollection($collections);
+
         return $this;
     }
 }

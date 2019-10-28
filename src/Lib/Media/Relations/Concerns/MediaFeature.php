@@ -6,7 +6,6 @@ use Singsys\LQ\Lib\Media\MediaUploader;
 
 trait MediaFeature
 {
-
     /**
      * Store the Media File and update in relation.
      */
@@ -26,7 +25,7 @@ trait MediaFeature
                 $media_data[] = $media->id;
                 $uploaded_data[] = $media;
             } else {
-                $media_data[] = (int)$file['id'];
+                $media_data[] = (int) $file['id'];
                 $uploaded_data[] = $mediaIns::find($file['id']);
             }
         }
@@ -36,8 +35,6 @@ trait MediaFeature
         $uploaded_data = $isJson ? $uploaded_data : $uploaded_data[0];
 
         $this->parent->setAttribute($this->getForeignKey(), $data);
-        //$this->parent->setTouchedRelations($this->relation]);
-
         if ($should_update) {
             $this->parent->update([$this->getForeignKey() => $data]);
         }

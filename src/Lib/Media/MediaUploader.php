@@ -27,18 +27,28 @@ class MediaUploader
 
     public static function mediaInstance()
     {
-        return config('lq.media_model_instance');
+        $model = config('lq.media_model_instance');
+
+        return new $model();
     }
 
     /**
      * Store the data in Database.
      */
-    public function storeInDB()
+    public function storeInDB($id = null)
     {
         $this->uploadAndPrepareData();
         $media = $this->mediaInstance();
+        if ($id) {
+            $media = $media->find($id);
+            $delete_media = new DeleteMediaFile($media);
+            $delete_media->delete();
+            $media->update($this->attribute);
 
-        return $media::updateOrCreate(['path' => $this->attribute['path']], $this->attribute);
+            return $media;
+        }
+
+        return $media->create($this->attribute);
     }
 
     /**
