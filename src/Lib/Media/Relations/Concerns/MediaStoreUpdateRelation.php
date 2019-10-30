@@ -44,8 +44,8 @@ trait MediaStoreUpdateRelation
             if (isset($file['id']) && !empty($file['id'])) {
                 $media = clone $this->getQuery();
                 $media = $media->where('id', $file['id'])->first();
-                $this->deleteFile($media);
                 $media->update($data);
+                $this->deleteFile($media);
 
                 return $media;
             } else {

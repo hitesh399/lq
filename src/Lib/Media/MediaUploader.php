@@ -10,13 +10,15 @@ class MediaUploader
     private $attribute = null;
     private $destination = 'uploads';
     private $thumbnails = null;
+    private $_driver = null;
 
     /**
      * @file => [file => File, thumbnails=> ['file' => File]]
      */
-    public function __construct(array $file, $destination = null, $thumbnails = null)
+    public function __construct(array $file, $destination = null, $thumbnails = null, $drive = null)
     {
         $this->file = $file;
+        $this->_driver = $drive ? $drive : \Config::get('filesystems.default', 'public');
 
         if ($destination) {
             $this->destination = $destination;
@@ -76,58 +78,33 @@ class MediaUploader
      */
     public function upload($file)
     {
-        $drive = \Config::get('filesystems.default', 'public');
-        $file_org_name = $file->getClientOriginalName();
-        $create_file_name = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
-        $file->storeAs($this->destination, $create_file_name);
+        $disk_info = \Config::get('filesystems.disks.'.$this->_driver);
 
-        $image_size = (substr($file->getMimeType(), 0, 5) == 'image') ? getimagesize($file->getPathName()) : null;
+        $file_org_name = $file->getClientOriginalName();
+        $unique_fname = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
+        $path = $this->destination.'/'.$unique_fname;
+        $data = $file->storeAs($this->destination, $unique_fname, $this->_driver);
+
+        $image_size = (
+            substr($file->getMimeType(), 0, 5) == 'image'
+        ) ? getimagesize($file->getPathName()) : null;
         $attribute = [];
 
-        $attribute['path'] = $this->destination.'/'.$create_file_name;
+        $attribute['path'] = $path;
         $attribute['type'] = $file->getMimeType();
-        $attribute['drive'] = $drive;
+        $attribute['driver'] = $this->_driver;
         $attribute['info'] = [
             'size' => $file->getSize(),
             'dimension' => $image_size ? ['width' => $image_size[0], 'height' => $image_size[1]] : null,
             'original_name' => $file_org_name,
         ];
 
-        return $attribute;
-    }
-
-    /**
-     * This function provides a unique file name.
-     *
-     * @param string - Folder Path
-     * @param string - File Name
-     */
-    public function getFileName($dir, $name)
-    {
-        $name = preg_replace('/[^a-zA-Z0-9\-\_\.]+/', '', $name);
-        if (Storage::exists($dir.'/'.$name)) {
-            $fName = explode('.', $name);
-            $ext = end($fName);
-            $last_index = count($fName) - 1;
-            unset($fName[$last_index]);
-            $f_name = implode('.', $fName);
-
-            $f_name_arr = explode('_', $f_name);
-            $last_num = end($f_name_arr);
-            $last_index = count($f_name_arr) - 1;
-            unset($f_name_arr[$last_index]);
-
-            if (is_numeric($last_num)) {
-                $f_name_arr[$last_index] = $last_num + 1;
-            } else {
-                $f_name_arr[$last_index] = $last_num.'_1';
-            }
-            $f_name = implode('_', $f_name_arr);
-            $name = $f_name.'.'.$ext;
-
-            return $this->getFileName($dir, $name);
+        if (isset($disk_info['save_public_url']) && $disk_info['save_public_url']) {
+            $attribute['info']['public_url'] = Storage::disk(
+                $this->_driver
+            )->url($path);
         }
 
-        return $name;
+        return $attribute;
     }
 }
