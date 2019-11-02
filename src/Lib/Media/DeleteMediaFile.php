@@ -22,10 +22,11 @@ class DeleteMediaFile
      */
     public function delete()
     {
+        $path = $this->_media->getOriginal('path');
         if ($this->_media->driver) {
-            Storage::disk($this->_media->driver)->delete($this->_media->path);
+            Storage::disk($this->_media->driver)->delete($path);
         } else {
-            Storage::delete($this->_media);
+            Storage::delete($path);
         }
     }
 

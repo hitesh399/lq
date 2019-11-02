@@ -98,11 +98,14 @@ class MediaUploader
             'dimension' => $image_size ? ['width' => $image_size[0], 'height' => $image_size[1]] : null,
             'original_name' => $file_org_name,
         ];
-
         if (isset($disk_info['save_public_url']) && $disk_info['save_public_url']) {
-            $attribute['info']['public_url'] = Storage::disk(
+            $public_url = Storage::disk(
                 $this->_driver
             )->url($path);
+            $attribute['info']['public_url'] = $public_url;
+            if (isset($disk_info['makePath']) && is_callable($disk_info['makePath'])) {
+                $attribute['path'] = $disk_info['makePath']($public_url, $path);
+            }
         }
 
         return $attribute;
