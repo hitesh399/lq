@@ -8,7 +8,7 @@ class MediaUploader
 {
     private $file = null;
     private $attribute = null;
-    private $destination = 'uploads';
+    private $destination = null;
     private $thumbnails = null;
     private $_driver = null;
 
@@ -82,7 +82,7 @@ class MediaUploader
 
         $file_org_name = $file->getClientOriginalName();
         $unique_fname = uniqid().'_'.time().'.'.$file->getClientOriginalExtension();
-        $path = $this->destination.'/'.$unique_fname;
+        $path = $this->destination ? $this->destination.'/'.$unique_fname : $unique_fname;
         $data = $file->storeAs($this->destination, $unique_fname, $this->_driver);
 
         $image_size = (
