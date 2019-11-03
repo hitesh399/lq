@@ -35,6 +35,17 @@ class AuthToken extends BearerTokenResponse
     {
         $client = new \Laravel\Passport\Bridge\Client($this->client_id, 'Laravel Password Grant Client', url('/'));
         $time = new \DateInterval('P1Y');
+         # private Key
+        $private_key = new CryptKey(storage_path('oauth-private.key'), null, false);
+
+        $this->setPrivateKey($private_key);
+        
+        if (method_exists($this->tokenGrand, 'setPrivateKey')) {
+            $this->tokenGrand->setPrivateKey($private_key);
+        }
+        
+
+        $this->setEncryptionKey(app('encrypter')->getKey());
         $accessToken = $this->tokenGrand->issueToken($time, $client, $this->user_id, []);
 
 
@@ -42,15 +53,11 @@ class AuthToken extends BearerTokenResponse
 
         $this->setAccessToken($accessToken);
         $this->setRefreshToken($refreshToken);
-        # private Key
-
-        $this->setPrivateKey(new CryptKey(storage_path('oauth-private.key'), null, false));
-
-        $this->setEncryptionKey(app('encrypter')->getKey());
+       
 
         $expireDateTime = $this->accessToken->getExpiryDateTime()->getTimestamp();
 
-        $jwtAccessToken = $this->accessToken->convertToJWT($this->privateKey);
+        $jwtAccessToken =  method_exists($this->accessToken, '__toString') ? $this->accessToken->__toString() : $this->accessToken->convertToJWT($this->privateKey);
 
         $responseParams = [
         'token_type'   => 'Bearer',
