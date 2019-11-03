@@ -1,7 +1,7 @@
 {
     "name": "singsys/laravel-quick",
     "require": {
-        "staudenmeir/eloquent-json-relations": "^1.1",
+        "staudenmeir/eloquent-json-relations": "^1.1"
     },
     "require-dev": {
         "laravel/passport": "^7.0",
