@@ -122,6 +122,10 @@ class LqApiMiddleware extends Authenticate
         }
     }
 
+    protected function getCurrentRoleId($request) {
+        return $request->user()->role_id;
+    }
+
     /**
      * To check the current route permission for the login user.
      */
@@ -145,7 +149,10 @@ class LqApiMiddleware extends Authenticate
 
             if ($request->user()) {
                 // Get Login user Role id.
-                $role_id = $request->user()->role_id;
+                $role_id = $this->getCurrentRoleId($request);
+                if (!$role_id) {
+                    throw new AuthorizationException();
+                }
 
                 // Add Current Permission Limitation and allowed field in final response.
                 $current_permission = $permission->roleCurrentPermission($role_id);
