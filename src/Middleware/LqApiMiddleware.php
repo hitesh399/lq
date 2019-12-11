@@ -112,7 +112,7 @@ class LqApiMiddleware extends Authenticate
         });
     }
 
-    private function _authenticateWithException($request)
+    private function _authenticateWithoutException($request)
     {
         if ($request->header('Authorization')) {
             try {
@@ -123,7 +123,7 @@ class LqApiMiddleware extends Authenticate
     }
 
     protected function getCurrentRoleId($request) {
-        return $request->user()->role_id;
+        return $request->user() ? $request->user()->role_id : null;
     }
 
     /**
@@ -144,7 +144,7 @@ class LqApiMiddleware extends Authenticate
             if (\Config::get('lq.check_authentication')) {
                 $this->authenticate($request, $guards);
             } else {
-                $this->_authenticateWithException($request);
+                $this->_authenticateWithoutException($request, $guards);
             }
 
             if ($request->user()) {
@@ -179,7 +179,8 @@ class LqApiMiddleware extends Authenticate
                 }
             }
         } elseif ($request->header('Authorization')) {
-            $this->_authenticateWithException($request);
+            $this->_authenticateWithoutException($request, $guards);
+            $this->getCurrentRoleId($request);
         }
     }
 }
