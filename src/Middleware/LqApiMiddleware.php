@@ -112,7 +112,7 @@ class LqApiMiddleware extends Authenticate
         });
     }
 
-    private function _authenticateWithoutException($request)
+    private function _authenticateWithoutException($request, $guards)
     {
         if ($request->header('Authorization')) {
             try {
