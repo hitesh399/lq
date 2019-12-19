@@ -16,10 +16,15 @@ class CorsMiddleware
             'Access-Control-Allow-Methods'=> 'POST, GET, OPTIONS, PUT, DELETE, PATCH',
             'Access-Control-Allow-Headers'=> 'cache-control, x-requested-with, Content-Type, Origin, client-id, device-id, Authorization, time-offset'
         ];
+        $possibleOrigins = $site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN');
+
         if (env('APP_DEBUG')) {
             $headers['Access-Control-Allow-Origin'] = '*';
-        } elseif ($site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN')) {
-            $headers['Access-Control-Allow-Origin'] = $site_config->get('ACCESS_CONTROL_ALLOW_ORIGIN');
+        } elseif ($possibleOrigins) {
+            $possibleOrigins = explode(',', $possibleOrigins);
+            if (in_array($request->header('origin'), $possibleOrigins)) {
+                $headers['Access-Control-Allow-Origin'] = $request->header('origin');
+            }
         }
 
         if ($request->getMethod() == "OPTIONS") {
