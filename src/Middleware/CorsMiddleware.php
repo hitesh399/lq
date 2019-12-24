@@ -5,6 +5,7 @@ namespace Singsys\LQ\Middleware;
 use Closure;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CorsMiddleware
 {
@@ -35,7 +36,7 @@ class CorsMiddleware
         $response = $next($request);
 
         foreach ($headers as $key => $value) {
-            if ($response instanceof BinaryFileResponse) {
+            if ($response instanceof BinaryFileResponse || $response instanceof StreamedResponse) {
                 $response->headers->set($key, $value);
             } else {
                 $response->header($key, $value);
